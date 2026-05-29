@@ -116,4 +116,11 @@ class NotaController extends Controller
         $nota->delete();
         return redirect()->route('nota.index')->with('success', 'Nota berhasil dihapus!');
     }
+
+
+    public function print(Nota $nota)
+    {
+        $nota->load('customer', 'pegawai', 'detailNota.barang');
+        return view('nota.print', compact('nota'));
+    }
 }

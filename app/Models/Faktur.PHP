@@ -6,14 +6,19 @@ use Illuminate\Database\Eloquent\Model;
  
 class Faktur extends Model
 {
-    protected $table = 'faktur';
+    protected $table      = 'faktur';
     protected $primaryKey = 'id_faktur';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    public    $incrementing = false;
+    protected $keyType    = 'string';
+ 
+    public function getRouteKeyName(): string
+    {
+        return 'id_faktur';
+    }
  
     protected $fillable = [
         'id_faktur', 'no_faktur', 'tanggal_faktur',
-        'total_jumlah_faktur', 'id_supplier', 'id_pegawai'
+        'total_jumlah_faktur', 'id_supplier', 'id_pegawai',
     ];
  
     public function supplier()

@@ -6,18 +6,19 @@ use Illuminate\Database\Eloquent\Model;
  
 class Nota extends Model
 {
-    protected $table = 'nota';
+    protected $table      = 'nota';
     protected $primaryKey = 'id_nota';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    public    $incrementing = false;
+    protected $keyType    = 'string';
  
-    public function getRouteKeyName()
+    public function getRouteKeyName(): string
     {
         return 'id_nota';
     }
+ 
     protected $fillable = [
         'id_nota', 'tanggal_nota', 'total_jumlah_nota',
-        'tanda_terima', 'id_customer', 'id_pegawai'
+        'tanda_terima', 'id_customer', 'id_pegawai',
     ];
  
     public function customer()

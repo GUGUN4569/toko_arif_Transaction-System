@@ -116,4 +116,10 @@ class FakturController extends Controller
         $faktur->delete();
         return redirect()->route('faktur.index')->with('success', 'Faktur berhasil dihapus!');
     }
+
+     public function print(Faktur $faktur)
+    {
+        $faktur->load('supplier', 'pegawai', 'detailFaktur.barang');
+        return view('faktur.print', compact('faktur'));
+    }
 }

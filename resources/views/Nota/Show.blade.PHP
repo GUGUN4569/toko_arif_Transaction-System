@@ -7,7 +7,9 @@
         <div class="card-header">
             <span class="card-title">Nota — <span class="badge badge-green font-mono">{{ $nota->id_nota }}</span></span>
             <div class="flex gap-2">
-                <a href="{{ route('nota.edit', $nota->id_nota) }}" class="btn btn-secondary btn-sm">Edit</a>
+                {{-- FIX: pakai $nota->id_nota secara eksplisit --}}
+                <a href="{{ route('nota.print', $nota->id_nota) }}" target="_blank" class="btn btn-primary btn-sm">🖨️ Cetak</a>
+                <a href="{{ route('nota.edit',  $nota->id_nota) }}" class="btn btn-secondary btn-sm">Edit</a>
                 <a href="{{ route('nota.index') }}" class="btn btn-secondary btn-sm">← Kembali</a>
             </div>
         </div>

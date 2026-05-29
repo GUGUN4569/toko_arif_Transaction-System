@@ -7,7 +7,9 @@
         <div class="card-header">
             <span class="card-title">Faktur — <span class="badge badge-gold font-mono">{{ $faktur->no_faktur }}</span></span>
             <div class="flex gap-2">
-                <a href="{{ route('faktur.edit', $faktur) }}" class="btn btn-secondary btn-sm">Edit</a>
+                {{-- FIX: pakai $faktur->id_faktur secara eksplisit --}}
+                <a href="{{ route('faktur.print', $faktur->id_faktur) }}" target="_blank" class="btn btn-primary btn-sm">🖨️ Cetak</a>
+                <a href="{{ route('faktur.edit',  $faktur->id_faktur) }}" class="btn btn-secondary btn-sm">Edit</a>
                 <a href="{{ route('faktur.index') }}" class="btn btn-secondary btn-sm">← Kembali</a>
             </div>
         </div>
