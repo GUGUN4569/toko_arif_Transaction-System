@@ -7,7 +7,7 @@
         <div class="card-header">
             <span class="card-title">Nota — <span class="badge badge-green font-mono">{{ $nota->id_nota }}</span></span>
             <div class="flex gap-2">
-                <a href="{{ route('nota.edit', $nota) }}" class="btn btn-secondary btn-sm">Edit</a>
+                <a href="{{ route('nota.edit', $nota->id_nota) }}" class="btn btn-secondary btn-sm">Edit</a>
                 <a href="{{ route('nota.index') }}" class="btn btn-secondary btn-sm">← Kembali</a>
             </div>
         </div>

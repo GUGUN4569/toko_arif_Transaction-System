@@ -11,6 +11,10 @@ class Nota extends Model
     public $incrementing = false;
     protected $keyType = 'string';
  
+    public function getRouteKeyName()
+    {
+        return 'id_nota';
+    }
     protected $fillable = [
         'id_nota', 'tanggal_nota', 'total_jumlah_nota',
         'tanda_terima', 'id_customer', 'id_pegawai'
