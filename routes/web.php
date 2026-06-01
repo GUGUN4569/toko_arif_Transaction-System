@@ -36,10 +36,11 @@ Route::middleware('auth')->group(function () {
  
     // Nota + cetak
     Route::get('nota/{nota}/print', [Notacontroller::class, 'print'])->name('nota.print');
-    Route::resource('nota', Notacontroller::class);
+    Route::resource('nota', NotaController::class)->parameters([
+    'nota' => 'nota']);
  
     // Faktur + cetak
     Route::get('faktur/{faktur}/print', [Fakturcontroller::class, 'print'])->name('faktur.print');
     Route::resource('faktur', Fakturcontroller::class);
- 
+    
 });
