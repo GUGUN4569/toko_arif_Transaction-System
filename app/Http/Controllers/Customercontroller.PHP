@@ -9,13 +9,13 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        $customers = Customer::paginate(10);
-        return view('customer.index', compact('customers'));
+        $customers = Customer::paginate(15);
+        return view('Customer.Index', compact('customers'));
     }
  
     public function create()
     {
-        return view('customer.create');
+        return view('Customer.Create');
     }
  
     public function store(Request $request)
@@ -27,18 +27,18 @@ class CustomerController extends Controller
         ]);
  
         Customer::create($request->all());
-        return redirect()->route('customer.index')->with('success', 'Customer berhasil ditambahkan!');
+ 
+        return redirect()->route('customer.index')->with('success', 'Customer berhasil ditambahkan.');
     }
  
     public function show(Customer $customer)
     {
-        $customer->load('nota');
-        return view('customer.show', compact('customer'));
+        return view('Customer.Show', compact('customer'));
     }
  
     public function edit(Customer $customer)
     {
-        return view('customer.edit', compact('customer'));
+        return view('Customer.Edit', compact('customer'));
     }
  
     public function update(Request $request, Customer $customer)
@@ -48,13 +48,14 @@ class CustomerController extends Controller
             'kontak'        => 'nullable|string|max:50',
         ]);
  
-        $customer->update($request->except('id_customer'));
-        return redirect()->route('customer.index')->with('success', 'Customer berhasil diperbarui!');
+        $customer->update($request->all());
+ 
+        return redirect()->route('customer.index')->with('success', 'Customer berhasil diperbarui.');
     }
  
     public function destroy(Customer $customer)
     {
         $customer->delete();
-        return redirect()->route('customer.index')->with('success', 'Customer berhasil dihapus!');
+        return redirect()->route('customer.index')->with('success', 'Customer berhasil dihapus.');
     }
 }

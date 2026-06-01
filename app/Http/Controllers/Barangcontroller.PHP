@@ -9,13 +9,13 @@ class BarangController extends Controller
 {
     public function index()
     {
-        $barang = Barang::paginate(10);
-        return view('barang.index', compact('barang'));
+        $barangs = Barang::paginate(15);
+        return view('Barang.Index', compact('barangs'));
     }
  
     public function create()
     {
-        return view('barang.create');
+        return view('Barang.Create');
     }
  
     public function store(Request $request)
@@ -29,17 +29,18 @@ class BarangController extends Controller
         ]);
  
         Barang::create($request->all());
-        return redirect()->route('barang.index')->with('success', 'Barang berhasil ditambahkan!');
+ 
+        return redirect()->route('barang.index')->with('success', 'Barang berhasil ditambahkan.');
     }
  
     public function show(Barang $barang)
     {
-        return view('barang.show', compact('barang'));
+        return view('Barang.Show', compact('barang'));
     }
  
     public function edit(Barang $barang)
     {
-        return view('barang.edit', compact('barang'));
+        return view('Barang.Edit', compact('barang'));
     }
  
     public function update(Request $request, Barang $barang)
@@ -51,13 +52,14 @@ class BarangController extends Controller
             'satuan'      => 'nullable|string|max:20',
         ]);
  
-        $barang->update($request->except('id_barang'));
-        return redirect()->route('barang.index')->with('success', 'Barang berhasil diperbarui!');
+        $barang->update($request->all());
+ 
+        return redirect()->route('barang.index')->with('success', 'Barang berhasil diperbarui.');
     }
  
     public function destroy(Barang $barang)
     {
         $barang->delete();
-        return redirect()->route('barang.index')->with('success', 'Barang berhasil dihapus!');
+        return redirect()->route('barang.index')->with('success', 'Barang berhasil dihapus.');
     }
 }

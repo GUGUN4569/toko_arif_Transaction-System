@@ -9,7 +9,7 @@
     @stack('styles')
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+ 
         :root {
             --bg:        #0d0f14;
             --bg2:       #13161e;
@@ -25,7 +25,7 @@
             --muted:     #6b7280;
             --sidebar-w: 232px;
         }
-
+ 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: var(--bg);
@@ -33,12 +33,12 @@
             min-height: 100vh;
             display: flex;
         }
-
+ 
         /* ── Scrollbar ── */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg2); }
         ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
-
+ 
         /* ════════════════════════════════
            SIDEBAR
         ════════════════════════════════ */
@@ -53,7 +53,7 @@
             z-index: 100;
             overflow-y: auto;
         }
-
+ 
         .sidebar-brand {
             padding: 20px 18px 18px;
             border-bottom: 1px solid var(--border);
@@ -61,7 +61,7 @@
             align-items: center;
             gap: 10px;
         }
-
+ 
         .brand-logo {
             width: 34px; height: 34px;
             background: linear-gradient(135deg, var(--accent), var(--accent2));
@@ -70,7 +70,7 @@
             font-size: 17px;
             flex-shrink: 0;
         }
-
+ 
         .brand-text {}
         .brand-name {
             font-family: 'Syne', sans-serif;
@@ -85,16 +85,16 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-
+ 
         .sidebar-nav {
             flex: 1;
             padding: 14px 10px;
         }
-
+ 
         .nav-section {
             margin-bottom: 20px;
         }
-
+ 
         .nav-section-label {
             font-size: 10px;
             text-transform: uppercase;
@@ -104,7 +104,7 @@
             margin-bottom: 6px;
             font-weight: 600;
         }
-
+ 
         .nav-item {
             display: flex;
             align-items: center;
@@ -118,25 +118,25 @@
             transition: all 0.12s;
             margin-bottom: 2px;
         }
-
+ 
         .nav-item:hover {
             background: var(--bg3);
             color: var(--text);
         }
-
+ 
         .nav-item.active {
             background: rgba(245,166,35,0.13);
             color: var(--accent);
         }
-
+ 
         .nav-item.active .nav-icon { opacity: 1; }
-
+ 
         .nav-icon {
             width: 17px; height: 17px;
             flex-shrink: 0;
             opacity: 0.7;
         }
-
+ 
         /* ════════════════════════════════
            MAIN
         ════════════════════════════════ */
@@ -148,7 +148,7 @@
             min-height: 100vh;
             min-width: 0;
         }
-
+ 
         .topbar {
             background: var(--bg2);
             border-bottom: 1px solid var(--border);
@@ -161,20 +161,20 @@
             top: 0;
             z-index: 50;
         }
-
+ 
         .page-title {
             font-family: 'Syne', sans-serif;
             font-size: 15px;
             font-weight: 700;
             color: var(--text);
         }
-
+ 
         .topbar-right {
             display: flex;
             gap: 8px;
             align-items: center;
         }
-
+ 
         .date-pill {
             font-size: 12px;
             color: var(--muted);
@@ -183,12 +183,12 @@
             border-radius: 6px;
             padding: 4px 10px;
         }
-
+ 
         .content {
             padding: 24px;
             flex: 1;
         }
-
+ 
         /* ════════════════════════════════
            ALERTS
         ════════════════════════════════ */
@@ -213,7 +213,7 @@
             border: 1px solid rgba(239,68,68,0.25);
             color: #f87171;
         }
-
+ 
         /* ════════════════════════════════
            BUTTONS
         ════════════════════════════════ */
@@ -240,7 +240,7 @@
         .btn-danger { background: rgba(239,68,68,0.12); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
         .btn-danger:hover { background: rgba(239,68,68,0.22); }
         .btn-sm { padding: 5px 11px; font-size: 12px; }
-
+ 
         /* ════════════════════════════════
            CARDS / PANELS
         ════════════════════════════════ */
@@ -259,7 +259,7 @@
         }
         .card-title { font-weight: 700; font-size: 14px; }
         .card-body { padding: 18px; }
-
+ 
         /* ════════════════════════════════
            STAT CARDS
         ════════════════════════════════ */
@@ -269,7 +269,7 @@
             gap: 14px;
             margin-bottom: 24px;
         }
-
+ 
         .stat-card {
             background: var(--bg2);
             border: 1px solid var(--border);
@@ -298,7 +298,7 @@
         .stat-card.red::after    { background: var(--red); }
         .stat-card.teal::after   { background: #14b8a6; }
         .stat-card.purple::after { background: #a855f7; }
-
+ 
         .stat-label {
             font-size: 10.5px;
             color: var(--muted);
@@ -324,16 +324,16 @@
             font-size: 11px;
             color: var(--muted);
         }
-
+ 
         /* ════════════════════════════════
            TABLE
         ════════════════════════════════ */
         .table-wrap { overflow-x: auto; }
-
+ 
         table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-
+ 
         thead tr { border-bottom: 1px solid var(--border2); }
-
+ 
         th {
             padding: 10px 16px;
             text-align: left;
@@ -344,17 +344,17 @@
             font-weight: 600;
             white-space: nowrap;
         }
-
+ 
         td {
             padding: 11px 16px;
             border-bottom: 1px solid var(--border);
             color: var(--text);
             vertical-align: middle;
         }
-
+ 
         tbody tr:last-child td { border-bottom: none; }
         tbody tr:hover td { background: rgba(255,255,255,0.025); }
-
+ 
         .td-mono {
             font-family: 'Courier New', monospace;
             font-size: 12px;
@@ -362,7 +362,7 @@
             font-weight: 600;
         }
         .td-amount { text-align: right; font-weight: 600; }
-
+ 
         /* ════════════════════════════════
            BADGES
         ════════════════════════════════ */
@@ -377,7 +377,7 @@
         .badge-blue   { background: rgba(59,130,246,0.12); color: #60a5fa; }
         .badge-gold   { background: rgba(245,166,35,0.12); color: var(--accent); }
         .badge-muted  { background: var(--bg3); color: var(--muted); border: 1px solid var(--border); }
-
+ 
         /* ════════════════════════════════
            RANK BADGE
         ════════════════════════════════ */
@@ -392,18 +392,18 @@
         .rank-2 { background: rgba(148,163,184,0.15); color: #94a3b8; }
         .rank-3 { background: rgba(239,68,68,0.15); color: #f87171; }
         .rank-n { background: var(--bg3); color: var(--muted); }
-
+ 
         /* ════════════════════════════════
            MINI BAR
         ════════════════════════════════ */
         .bar-bg { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; min-width: 60px; }
         .bar-fill { height: 100%; border-radius: 3px; background: var(--green); }
-
+ 
         /* ════════════════════════════════
            FORMS
         ════════════════════════════════ */
         .form-group { margin-bottom: 18px; }
-
+ 
         label {
             display: block;
             font-size: 12px;
@@ -413,7 +413,7 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-
+ 
         input[type="text"],
         input[type="number"],
         input[type="date"],
@@ -435,16 +435,16 @@
             box-shadow: 0 0 0 3px rgba(245,166,35,0.1);
         }
         select option { background: var(--bg3); }
-
+ 
         .form-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 16px;
         }
-
+ 
         .invalid-feedback { color: var(--red); font-size: 12px; margin-top: 5px; }
         .is-invalid { border-color: var(--red) !important; }
-
+ 
         /* ════════════════════════════════
            PAGINATION
         ════════════════════════════════ */
@@ -465,7 +465,7 @@
         }
         .page-link:hover { color: var(--text); border-color: var(--accent); }
         .page-link.active { background: var(--accent); color: #0d0f14; border-color: var(--accent); font-weight: 700; }
-
+ 
         /* ════════════════════════════════
            ITEM ROW (nota / faktur create)
         ════════════════════════════════ */
@@ -481,7 +481,7 @@
             border: 1px solid var(--border);
         }
         #items-container .item-row:first-child .remove-item { display: none; }
-
+ 
         /* ════════════════════════════════
            UTILITIES
         ════════════════════════════════ */
@@ -501,7 +501,7 @@
     </style>
 </head>
 <body>
-
+ 
 <!-- ── Sidebar ── -->
 <aside class="sidebar">
     <div class="sidebar-brand">
@@ -511,7 +511,7 @@
             <div class="brand-sub">Manajemen Toko</div>
         </div>
     </div>
-
+ 
     <nav class="sidebar-nav">
         <div class="nav-section">
             <div class="nav-section-label">Utama</div>
@@ -520,7 +520,7 @@
                 Dashboard
             </a>
         </div>
-
+ 
         <div class="nav-section">
             <div class="nav-section-label">Master Data</div>
             <a href="{{ route('barang.index') }}" class="nav-item {{ request()->routeIs('barang.*') ? 'active' : '' }}">
@@ -540,7 +540,7 @@
                 Pegawai
             </a>
         </div>
-
+ 
         <div class="nav-section">
             <div class="nav-section-label">Transaksi</div>
             <a href="{{ route('nota.index') }}" class="nav-item {{ request()->routeIs('nota.*') ? 'active' : '' }}">
@@ -553,8 +553,46 @@
             </a>
         </div>
     </nav>
+ 
+    <!-- ── User & Logout ── -->
+    <div style="padding:12px 10px;border-top:1px solid var(--border);margin-top:auto">
+        <div style="padding:10px 10px 8px;border-radius:9px;background:var(--bg3);border:1px solid var(--border)">
+            <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                {{ Auth::user()->name ?? 'Admin' }}
+            </div>
+            <div style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:8px">
+                {{ Auth::user()->email ?? '' }}
+            </div>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" style="
+                    width:100%;
+                    display:flex;
+                    align-items:center;
+                    gap:7px;
+                    padding:6px 9px;
+                    background:rgba(239,68,68,0.08);
+                    color:#f87171;
+                    border:1px solid rgba(239,68,68,0.18);
+                    border-radius:7px;
+                    font-size:12.5px;
+                    font-weight:600;
+                    font-family:'Plus Jakarta Sans',sans-serif;
+                    cursor:pointer;
+                    transition:background 0.15s;
+                " onmouseover="this.style.background='rgba(239,68,68,0.16)'"
+                   onmouseout="this.style.background='rgba(239,68,68,0.08)'">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    Keluar
+                </button>
+            </form>
+        </div>
+    </div>
 </aside>
-
+ 
 <!-- ── Main ── -->
 <div class="main">
     <header class="topbar">
@@ -564,7 +602,7 @@
             @yield('topbar-actions')
         </div>
     </header>
-
+ 
     <div class="content">
         @if(session('success'))
             <div class="alert alert-success">
@@ -572,18 +610,18 @@
                 {{ session('success') }}
             </div>
         @endif
-
+ 
         @if($errors->any())
             <div class="alert alert-danger">
                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 <div>@foreach($errors->all() as $e)<div>{{ $e }}</div>@endforeach</div>
             </div>
         @endif
-
+ 
         @yield('content')
     </div>
 </div>
-
+ 
 @stack('scripts')
 </body>
 </html>
