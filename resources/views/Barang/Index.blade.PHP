@@ -23,7 +23,7 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($barang as $b)
+                @forelse($barangs as $b)
                 <tr>
                     <td><span class="badge badge-blue font-mono">{{ $b->id_barang }}</span></td>
                     <td><strong>{{ $b->nama_barang }}</strong></td>
@@ -54,8 +54,8 @@
         </table>
     </div>
     <div class="pagination">
-        @foreach($barang->links()->elements[0] as $page => $url)
-            <a href="{{ $url }}" class="page-link {{ $barang->currentPage() == $page ? 'active' : '' }}">{{ $page }}</a>
+        @foreach($barangs->links()->elements[0] as $page => $url)
+            <a href="{{ $url }}" class="page-link {{ $barangs->currentPage() == $page ? 'active' : '' }}">{{ $page }}</a>
         @endforeach
     </div>
 </div>
