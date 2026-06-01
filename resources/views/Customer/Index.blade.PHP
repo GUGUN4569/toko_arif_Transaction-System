@@ -28,7 +28,7 @@
                     <td>{{ $c->kontak ?? '-' }}</td>
                     <td>
                         <div class="flex gap-2">
-                            <a href="{{ route('customer.show', $c) }}" class="btn btn-secondary btn-sm">Detail</a>
+ 
                             <a href="{{ route('customer.edit', $c) }}" class="btn btn-secondary btn-sm">Edit</a>
                             <form action="{{ route('customer.destroy', $c) }}" method="POST" onsubmit="return confirm('Hapus customer ini?')">
                                 @csrf @method('DELETE')

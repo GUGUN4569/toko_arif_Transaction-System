@@ -38,7 +38,7 @@
                     <td>{{ $b->satuan ?? '-' }}</td>
                     <td>
                         <div class="flex gap-2">
-                            <a href="{{ route('barang.show', $b) }}" class="btn btn-secondary btn-sm">Detail</a>
+ 
                             <a href="{{ route('barang.edit', $b) }}" class="btn btn-secondary btn-sm">Edit</a>
                             <form action="{{ route('barang.destroy', $b) }}" method="POST" onsubmit="return confirm('Hapus barang ini?')">
                                 @csrf @method('DELETE')

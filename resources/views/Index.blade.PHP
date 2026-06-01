@@ -297,9 +297,7 @@
         </svg>
     </a>
  
-    <p class="footer-note">
-        Belum punya akun? Hubungi <a href="#">administrator</a> toko.
-    </p>
+ 
 </div>
  
 </body>

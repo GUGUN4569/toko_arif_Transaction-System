@@ -1,16 +1,16 @@
 <?php
  
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\BarangController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\PegawaiController;
-use App\Http\Controllers\NotaController;
-use App\Http\Controllers\FakturController;
+use App\Http\Controllers\Dashboardcontroller;
+use App\Http\Controllers\Barangcontroller;
+use App\Http\Controllers\Customercontroller;
+use App\Http\Controllers\Suppliercontroller;
+use App\Http\Controllers\Pegawaicontroller;
+use App\Http\Controllers\Notacontroller;
+use App\Http\Controllers\Fakturcontroller;
 use App\Http\Controllers\DetailFakturController;
 use App\Http\Controllers\DetailNotaController;
-use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Logincontroller;
  
 // ── Halaman Utama (Landing) ──────────────────────────
 Route::get('/', function () {
@@ -18,21 +18,21 @@ Route::get('/', function () {
 })->name('home');
  
 // ── Auth ─────────────────────────────────────────────
-Route::get('/login',  [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login']);
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::get('/login',   [Logincontroller::class, 'showLoginForm'])->name('login');
+Route::post('/login',  [Logincontroller::class, 'login']);
+Route::post('/logout', [Logincontroller::class, 'logout'])->name('logout');
  
 // ── Protected Routes (harus login) ───────────────────
 Route::middleware('auth')->group(function () {
  
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [Dashboardcontroller::class, 'index'])->name('dashboard');
  
-    Route::resource('barang',       BarangController::class);
-    Route::resource('customer',     CustomerController::class);
-    Route::resource('supplier',     SupplierController::class);
-    Route::resource('pegawai',      PegawaiController::class);
-    Route::resource('nota',         NotaController::class);
-    Route::resource('faktur',       FakturController::class);
+    Route::resource('barang',        Barangcontroller::class);
+    Route::resource('customer',      Customercontroller::class);
+    Route::resource('supplier',      Suppliercontroller::class);
+    Route::resource('pegawai',       Pegawaicontroller::class);
+    Route::resource('nota',          Notacontroller::class);
+    Route::resource('faktur',        Fakturcontroller::class);
     Route::resource('detail-faktur', DetailFakturController::class);
     Route::resource('detail-nota',   DetailNotaController::class);
  

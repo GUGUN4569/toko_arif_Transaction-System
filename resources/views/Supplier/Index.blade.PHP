@@ -30,7 +30,7 @@
                     <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $s->alamat_supplier ?? '-' }}</td>
                     <td>
                         <div class="flex gap-2">
-                            <a href="{{ route('supplier.show', $s) }}" class="btn btn-secondary btn-sm">Detail</a>
+ 
                             <a href="{{ route('supplier.edit', $s) }}" class="btn btn-secondary btn-sm">Edit</a>
                             <form action="{{ route('supplier.destroy', $s) }}" method="POST" onsubmit="return confirm('Hapus supplier ini?')">
                                 @csrf @method('DELETE')
