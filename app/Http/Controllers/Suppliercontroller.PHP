@@ -9,7 +9,7 @@ class SupplierController extends Controller
 {
     public function index()
     {
-        $suppliers = Supplier::paginate(10);
+        $suppliers = Supplier::paginate(8);
         return view('Supplier.Index', compact('suppliers'));
     }
  
