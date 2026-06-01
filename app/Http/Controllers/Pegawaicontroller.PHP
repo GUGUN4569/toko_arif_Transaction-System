@@ -10,12 +10,12 @@ class PegawaiController extends Controller
     public function index()
     {
         $pegawais = Pegawai::paginate(10);
-        return view('pegawai.index', compact('pegawais'));
+        return view('Pegawai.Index', compact('pegawais'));
     }
  
     public function create()
     {
-        return view('pegawai.create');
+        return view('Pegawai.Create');
     }
  
     public function store(Request $request)
@@ -30,12 +30,12 @@ class PegawaiController extends Controller
  
     public function show(Pegawai $pegawai)
     {
-        return view('pegawai.show', compact('pegawai'));
+        return view('Pegawai.Show', compact('pegawai'));
     }
  
     public function edit(Pegawai $pegawai)
     {
-        return view('pegawai.edit', compact('pegawai'));
+        return view('Pegawai.Edit', compact('pegawai'));
     }
  
     public function update(Request $request, Pegawai $pegawai)

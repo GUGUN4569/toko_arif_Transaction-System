@@ -14,7 +14,7 @@
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>ID Pegawai</th>
                     <th>Nama Pegawai</th>
                     <th>Aksi</th>
                 </tr>
@@ -22,7 +22,7 @@
             <tbody>
                 @forelse($pegawais as $p)
                 <tr>
-                    <td><span class="badge badge-blue">#{{ $p->id_pegawai }}</span></td>
+                    <td><span class="badge badge-muted font-mono">{{ $p->id_pegawai }}</span></td>
                     <td><strong>{{ $p->nama_pegawai }}</strong></td>
                     <td>
                         <div class="flex gap-2">
@@ -39,6 +39,11 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+    <div class="pagination">
+        @foreach($pegawais->links()->elements[0] as $page => $url)
+            <a href="{{ $url }}" class="page-link {{ $pegawais->currentPage() == $page ? 'active' : '' }}">{{ $page }}</a>
+        @endforeach
     </div>
 </div>
 @endsection

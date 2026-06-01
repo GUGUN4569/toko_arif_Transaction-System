@@ -14,7 +14,7 @@
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>ID Customer</th>
                     <th>Nama Customer</th>
                     <th>Kontak</th>
                     <th>Aksi</th>
@@ -23,12 +23,11 @@
             <tbody>
                 @forelse($customers as $c)
                 <tr>
-                    <td><span class="badge badge-blue font-mono">{{ $c->id_customer }}</span></td>
+                    <td><span class="badge badge-green font-mono">{{ $c->id_customer }}</span></td>
                     <td><strong>{{ $c->nama_customer }}</strong></td>
                     <td>{{ $c->kontak ?? '-' }}</td>
                     <td>
                         <div class="flex gap-2">
- 
                             <a href="{{ route('customer.edit', $c) }}" class="btn btn-secondary btn-sm">Edit</a>
                             <form action="{{ route('customer.destroy', $c) }}" method="POST" onsubmit="return confirm('Hapus customer ini?')">
                                 @csrf @method('DELETE')
@@ -42,6 +41,11 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+    <div class="pagination">
+        @foreach($customers->links()->elements[0] as $page => $url)
+            <a href="{{ $url }}" class="page-link {{ $customers->currentPage() == $page ? 'active' : '' }}">{{ $page }}</a>
+        @endforeach
     </div>
 </div>
 @endsection
