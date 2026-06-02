@@ -23,16 +23,25 @@
             --muted:   #6b7280;
         }
  
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
+        body{
+        font-family:'Plus Jakarta Sans',sans-serif;
+
+        background:
+            linear-gradient(
+                rgba(27,67,50,.85),
+                rgba(45,106,79,.85)
+            ),
+            url('https://images.unsplash.com/photo-1604719312566-8912e9227c6a');
+
+        background-size:cover;
+        background-position:center;
+
+        color:var(--text);
+
+        min-height:100vh;
+        display:flex;
+        align-items:center;
+        justify-content:center;
         }
  
         body::before {
@@ -46,13 +55,7 @@
         }
  
         .grid-bg {
-            position: absolute;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(37,42,56,0.35) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(37,42,56,0.35) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
+        display: none;
         }
  
         /* ── Login Card ── */
