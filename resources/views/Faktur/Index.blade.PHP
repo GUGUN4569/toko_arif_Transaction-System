@@ -36,6 +36,15 @@
                         <div class="flex gap-2">
                             <a href="{{ route('faktur.show', $f) }}" class="btn btn-secondary btn-sm">Detail</a>
                             <a href="{{ route('faktur.edit', $f) }}" class="btn btn-secondary btn-sm">Edit</a>
+                            <!-- Tombol Upload -->
+                            <button onclick="openUpload('{{ $f->id_faktur }}')"
+                                class="btn btn-sm"
+                                style="background:rgba(59,130,246,0.12);color:#60a5fa;border:1px solid rgba(59,130,246,0.25);">
+                                📎 Upload
+                            </button>
+                            @if($f->file_faktur)
+                                <span class="badge badge-green" title="File sudah diupload">✓</span>
+                            @endif
                             <form action="{{ route('faktur.destroy', $f) }}" method="POST" onsubmit="return confirm('Hapus faktur ini?')">
                                 @csrf @method('DELETE')
                                 <button class="btn btn-danger btn-sm">Hapus</button>
@@ -51,3 +60,44 @@
     </div>
 </div>
 @endsection
+ 
+@push('scripts')
+<!-- Modal Upload Faktur -->
+<div id="modal-upload" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;width:90%;max-width:420px;box-shadow:0 24px 48px rgba(0,0,0,0.4);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+            <h3 style="font-size:15px;font-weight:700;">📎 Upload File Faktur</h3>
+            <button onclick="closeUpload()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1">&times;</button>
+        </div>
+        <form id="form-upload" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div style="margin-bottom:16px">
+                <label style="display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">
+                    File Faktur (JPG, PNG, PDF — maks. 5MB)
+                </label>
+                <input type="file" name="file_faktur" id="input-file"
+                    accept=".jpg,.jpeg,.png,.pdf"
+                    style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:9px 13px;color:var(--text);font-size:13px;">
+            </div>
+            <div style="display:flex;gap:8px;justify-content:flex-end">
+                <button type="button" onclick="closeUpload()" class="btn btn-secondary">Batal</button>
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+function openUpload(idFaktur) {
+    const modal = document.getElementById('modal-upload');
+    document.getElementById('form-upload').action = '/faktur/' + idFaktur + '/upload';
+    document.getElementById('input-file').value = '';
+    modal.style.display = 'flex';
+}
+function closeUpload() {
+    document.getElementById('modal-upload').style.display = 'none';
+}
+document.getElementById('modal-upload').addEventListener('click', function(e) {
+    if (e.target === this) closeUpload();
+});
+</script>
+@endpush

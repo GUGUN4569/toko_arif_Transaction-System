@@ -26,6 +26,43 @@
             --sidebar-w: 232px;
         }
  
+        /* ── Light Mode ── */
+        html.light {
+            --bg:      #f0f2f5;
+            --bg2:     #ffffff;
+            --bg3:     #f5f7fa;
+            --border:  #e2e6ed;
+            --border2: #d0d6e0;
+            --accent:  #e8820c;
+            --accent2: #c96d08;
+            --green:   #16a34a;
+            --red:     #dc2626;
+            --blue:    #2563eb;
+            --text:    #0f1117;
+            --muted:   #64748b;
+        }
+ 
+        /* Toggle button */
+        .theme-toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--border2);
+            background: var(--bg3);
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.15s;
+            flex-shrink: 0;
+        }
+        .theme-toggle:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--bg2);
+        }
+ 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: var(--bg);
@@ -600,6 +637,7 @@
         <div class="topbar-right">
             <span class="date-pill">{{ \Carbon\Carbon::now()->translatedFormat('d M Y') }}</span>
             @yield('topbar-actions')
+            <button class="theme-toggle" id="theme-toggle" title="Ganti Tema" onclick="toggleTheme()">🌙</button>
         </div>
     </header>
  
@@ -623,5 +661,31 @@
 </div>
  
 @stack('scripts')
+<script>
+    // ── Theme Toggle ──────────────────────────────────
+    const btn = document.getElementById('theme-toggle');
+ 
+    function applyTheme(theme) {
+        if (theme === 'light') {
+            document.documentElement.classList.add('light');
+            btn.textContent = '☀️';
+            btn.title = 'Mode Gelap';
+        } else {
+            document.documentElement.classList.remove('light');
+            btn.textContent = '🌙';
+            btn.title = 'Mode Terang';
+        }
+    }
+ 
+    function toggleTheme() {
+        const current = localStorage.getItem('theme') || 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('theme', next);
+        applyTheme(next);
+    }
+ 
+    // Terapkan tema tersimpan saat halaman load
+    applyTheme(localStorage.getItem('theme') || 'dark');
+</script>
 </body>
 </html>

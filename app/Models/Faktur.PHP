@@ -18,7 +18,7 @@ class Faktur extends Model
  
     protected $fillable = [
         'id_faktur', 'no_faktur', 'tanggal_faktur',
-        'total_jumlah_faktur', 'id_supplier', 'id_pegawai',
+        'total_jumlah_faktur', 'file_faktur', 'id_supplier', 'id_pegawai',
     ];
  
     public function supplier()

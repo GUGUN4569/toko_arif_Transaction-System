@@ -7,9 +7,21 @@
         <div class="card-header">
             <span class="card-title">Faktur — <span class="badge badge-gold font-mono">{{ $faktur->no_faktur }}</span></span>
             <div class="flex gap-2">
-                {{-- FIX: pakai $faktur->id_faktur secara eksplisit --}}
-                <a href="{{ route('faktur.print', $faktur->id_faktur) }}" target="_blank" class="btn btn-primary btn-sm">🖨️ Cetak</a>
-                <a href="{{ route('faktur.edit',  $faktur->id_faktur) }}" class="btn btn-secondary btn-sm">Edit</a>
+                @if($faktur->file_faktur)
+                    <a href="{{ Storage::url($faktur->file_faktur) }}" target="_blank" class="btn btn-primary btn-sm">
+                        📎 Lihat File Faktur
+                    </a>
+                    <form action="{{ route('faktur.delete-file', $faktur->id_faktur) }}" method="POST"
+                          onsubmit="return confirm('Hapus file faktur ini?')">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="btn btn-danger btn-sm">🗑️ Hapus File</button>
+                    </form>
+                @else
+                    <span class="btn btn-sm" style="background:var(--bg3);color:var(--muted);border:1px solid var(--border);cursor:default;">
+                        📎 Belum Ada File
+                    </span>
+                @endif
+                <a href="{{ route('faktur.edit', $faktur->id_faktur) }}" class="btn btn-secondary btn-sm">Edit</a>
                 <a href="{{ route('faktur.index') }}" class="btn btn-secondary btn-sm">← Kembali</a>
             </div>
         </div>

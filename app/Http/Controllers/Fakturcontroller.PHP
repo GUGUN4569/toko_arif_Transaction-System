@@ -8,13 +8,14 @@ use App\Models\Supplier;
 use App\Models\Pegawai;
 use App\Models\Barang;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
  
 class FakturController extends Controller
 {
     public function index()
     {
         $fakturs = Faktur::with('supplier', 'pegawai')->latest('tanggal_faktur')->paginate(10);
-        return view('faktur.index', compact('fakturs'));
+        return view('Faktur.Index', compact('fakturs'));
     }
  
     public function create()
@@ -22,7 +23,7 @@ class FakturController extends Controller
         $suppliers = Supplier::all();
         $pegawais  = Pegawai::all();
         $barangs   = Barang::all();
-        return view('faktur.create', compact('suppliers', 'pegawais', 'barangs'));
+        return view('Faktur.Create', compact('suppliers', 'pegawais', 'barangs'));
     }
  
     public function store(Request $request)
@@ -42,12 +43,12 @@ class FakturController extends Controller
         $total = collect($request->items)->sum('subtotal_faktur');
  
         $faktur = Faktur::create([
-            'id_faktur'            => $request->id_faktur,
-            'no_faktur'            => $request->no_faktur,
-            'tanggal_faktur'       => $request->tanggal_faktur,
-            'id_supplier'          => $request->id_supplier,
-            'id_pegawai'           => $request->id_pegawai,
-            'total_jumlah_faktur'  => $total,
+            'id_faktur'           => $request->id_faktur,
+            'no_faktur'           => $request->no_faktur,
+            'tanggal_faktur'      => $request->tanggal_faktur,
+            'id_supplier'         => $request->id_supplier,
+            'id_pegawai'          => $request->id_pegawai,
+            'total_jumlah_faktur' => $total,
         ]);
  
         foreach ($request->items as $item) {
@@ -65,7 +66,7 @@ class FakturController extends Controller
     public function show(Faktur $faktur)
     {
         $faktur->load('supplier', 'pegawai', 'detailFaktur.barang');
-        return view('faktur.show', compact('faktur'));
+        return view('Faktur.Show', compact('faktur'));
     }
  
     public function edit(Faktur $faktur)
@@ -74,7 +75,7 @@ class FakturController extends Controller
         $suppliers = Supplier::all();
         $pegawais  = Pegawai::all();
         $barangs   = Barang::all();
-        return view('faktur.edit', compact('faktur', 'suppliers', 'pegawais', 'barangs'));
+        return view('Faktur.Edit', compact('faktur', 'suppliers', 'pegawais', 'barangs'));
     }
  
     public function update(Request $request, Faktur $faktur)
@@ -112,14 +113,50 @@ class FakturController extends Controller
  
     public function destroy(Faktur $faktur)
     {
+        // Hapus file jika ada
+        if ($faktur->file_faktur) {
+            Storage::disk('public')->delete($faktur->file_faktur);
+        }
         $faktur->detailFaktur()->delete();
         $faktur->delete();
         return redirect()->route('faktur.index')->with('success', 'Faktur berhasil dihapus!');
     }
-
-     public function print(Faktur $faktur)
+ 
+    public function print(Faktur $faktur)
     {
         $faktur->load('supplier', 'pegawai', 'detailFaktur.barang');
-        return view('faktur.print', compact('faktur'));
+        return view('Faktur.print', compact('faktur'));
+    }
+ 
+    // ── Hapus file faktur ───────────────────────────────
+    public function deleteFile(Faktur $faktur)
+    {
+        if ($faktur->file_faktur) {
+            Storage::disk('public')->delete($faktur->file_faktur);
+            $faktur->update(['file_faktur' => null]);
+        }
+ 
+        return redirect()->route('faktur.show', $faktur)
+            ->with('success', 'File faktur berhasil dihapus.');
+    }
+ 
+    // ── Upload file faktur ──────────────────────────────
+    public function upload(Request $request, Faktur $faktur)
+    {
+        $request->validate([
+            'file_faktur' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+        ]);
+ 
+        // Hapus file lama jika ada
+        if ($faktur->file_faktur) {
+            Storage::disk('public')->delete($faktur->file_faktur);
+        }
+ 
+        $path = $request->file('file_faktur')->store('faktur', 'public');
+ 
+        $faktur->update(['file_faktur' => $path]);
+ 
+        return redirect()->route('faktur.show', $faktur)
+            ->with('success', 'File faktur berhasil diupload!');
     }
 }

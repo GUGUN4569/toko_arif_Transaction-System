@@ -41,6 +41,8 @@ Route::middleware('auth')->group(function () {
  
     // Faktur + cetak
     Route::get('faktur/{faktur}/print', [Fakturcontroller::class, 'print'])->name('faktur.print');
+    Route::post('faktur/{faktur}/upload', [Fakturcontroller::class, 'upload'])->name('faktur.upload');
+    Route::delete('faktur/{faktur}/delete-file', [Fakturcontroller::class, 'deleteFile'])->name('faktur.delete-file');
     Route::resource('faktur', Fakturcontroller::class);
     
 });
