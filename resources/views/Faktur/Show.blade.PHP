@@ -22,6 +22,11 @@
                     </span>
                 @endif
                 <a href="{{ route('faktur.edit', $faktur->id_faktur) }}" class="btn btn-secondary btn-sm">Edit</a>
+                <form action="{{ route('faktur.destroy', $faktur->id_faktur) }}" method="POST"
+                      onsubmit="return confirm('Hapus faktur {{ $faktur->id_faktur }} beserta semua detailnya?')">
+                    @csrf @method('DELETE')
+                    <button type="submit" class="btn btn-danger btn-sm">🗑️ Hapus</button>
+                </form>
                 <a href="{{ route('faktur.index') }}" class="btn btn-secondary btn-sm">← Kembali</a>
             </div>
         </div>
