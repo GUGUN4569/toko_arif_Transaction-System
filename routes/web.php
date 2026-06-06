@@ -32,7 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('supplier',      Suppliercontroller::class);
     Route::resource('pegawai',       Pegawaicontroller::class);
     Route::resource('detail-faktur', DetailFakturController::class);
-    Route::resource('detail-nota',   DetailNotaController::class);
+Route::resource('detail-nota', DetailNotaController::class)
+    ->parameters(['detail-nota' => 'detail_nota']);
  
     // Nota + cetak
     Route::get('nota/{nota}/print', [Notacontroller::class, 'print'])->name('nota.print');

@@ -85,7 +85,7 @@ class DetailFakturController extends Controller
             $faktur->save();
         });
  
-        return redirect()->route('detail-faktur.index')
+        return redirect()->route('faktur.show', $detailFaktur->id_faktur)
                          ->with('success', 'Detail Faktur updated successfully.');
     }
  

@@ -65,6 +65,7 @@ class NotaController extends Controller
     public function show(Nota $nota)
     {
         $nota->load('customer', 'pegawai', 'detailNota.barang');
+        // dd($nota->detailNota);
         $barangs = Barang::all();
         return view('Nota.Show', compact('nota', 'barangs'));
     }
@@ -87,6 +88,7 @@ class NotaController extends Controller
             'tanda_terima' => 'nullable|string|max:100',
             'items'        => 'required|array|min:1',
         ]);
+
  
         $total = collect($request->items)->sum('subtotal_nota');
  
@@ -95,18 +97,10 @@ class NotaController extends Controller
             'id_customer'       => $request->id_customer,
             'id_pegawai'        => $request->id_pegawai,
             'tanda_terima'      => $request->tanda_terima,
+            'banyaknya'         => $request->banyaknya,
             'total_jumlah_nota' => $total,
         ]);
  
-        $nota->detailNota()->delete();
-        foreach ($request->items as $item) {
-            DetailNota::create([
-                'id_nota'       => $nota->id_nota,
-                'id_barang'     => $item['id_barang'],
-                'banyaknya'     => $item['banyaknya'],
-                'subtotal_nota' => $item['subtotal_nota'],
-            ]);
-        }
  
         return redirect()->route('nota.index')->with('success', 'Nota berhasil diperbarui!');
     }

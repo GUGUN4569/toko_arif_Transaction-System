@@ -67,27 +67,47 @@ class DetailNotaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, DetailNota $detailNota)
-    {
-        $request->validate([
-            'id_nota' => 'required|exists:nota,id_nota',
-            'id_barang' => 'required|exists:barang,id_barang',
-            'banyaknya' => 'required|integer|min:1',
-            'subtotal_nota' => 'required|numeric|min:0',
+public function update(Request $request, DetailNota $detailNota)
+{
+    // 1. Validasi input dari form edit item
+    $request->validate([
+        'id_barang' => 'required',
+        'banyaknya' => 'required|integer|min:1',
+    ]);
+
+    // 2. Hitung subtotal di sisi server (Backend) agar lebih aman
+    // Asumsi Anda memiliki model Barang
+    $barang = \App\Models\Barang::find($request->id_barang);
+    $harga = $barang->harga ?? 0;
+    $disc = $barang->disc ?? 0;
+    
+    // Rumus: (Harga x Qty) dikurangi diskon
+    $subtotal = ($harga * $request->banyaknya) * (1 - $disc / 100);
+
+    // 3. Update data pada baris DetailNota ini saja
+    $detailNota->update([
+        'id_barang'     => $request->id_barang,
+        'banyaknya'     => $request->banyaknya,
+        'subtotal_nota' => $subtotal, 
+    ]);
+
+    // 4. Update `total_jumlah_nota` pada tabel induk (Nota)
+    $nota = \App\Models\Nota::find($detailNota->id_nota);
+    
+    
+    if ($nota) {
+        // Jumlahkan semua subtotal_nota dari detail_nota yang memiliki id_nota yang sama
+        $totalKeseluruhan = $nota->detailNota()->sum('subtotal_nota');
+        
+        $nota->update([
+            'total_jumlah_nota' => $totalKeseluruhan
         ]);
- 
-        DB::transaction(function () use ($request, $detailNota) {
-            $detailNota->update($request->all());
- 
-            // Update total in nota table
-            $nota = Nota::find($request->id_nota);
-            $nota->total_jumlah_nota = $nota->detailNota()->sum('subtotal_nota');
-            $nota->save();
-        });
- 
-        return redirect()->route('detail-nota.index')
-                         ->with('success', 'Detail Nota updated successfully.');
     }
+
+    // 5. Redirect kembali ke halaman detail nota
+    return redirect()->route('nota.show', $request->id_nota)
+                     ->with('success', 'Item nota berhasil diperbarui.');
+}
  
     /**
      * Remove the specified resource from storage.
