@@ -66,7 +66,8 @@ class FakturController extends Controller
     public function show(Faktur $faktur)
     {
         $faktur->load('supplier', 'pegawai', 'detailFaktur.barang');
-        return view('Faktur.Show', compact('faktur'));
+        $barangs = Barang::all();
+        return view('Faktur.Show', compact('faktur', 'barangs'));
     }
  
     public function edit(Faktur $faktur)

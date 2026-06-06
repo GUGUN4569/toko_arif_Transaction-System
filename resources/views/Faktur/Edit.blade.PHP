@@ -54,30 +54,24 @@
         <div class="card">
             <div class="card-header">
                 <span class="card-title">Detail Barang</span>
-                <button type="button" class="btn btn-secondary btn-sm" onclick="addItem()">+ Tambah Baris</button>
             </div>
             <div class="card-body">
-                <div style="display:grid;grid-template-columns:1fr 90px 140px 36px;gap:8px;margin-bottom:8px">
+                <div style="display:grid;grid-template-columns:1fr 90px 140px;gap:8px;margin-bottom:8px">
                     <span style="font-size:11px;color:var(--muted);text-transform:uppercase">Barang</span>
                     <span style="font-size:11px;color:var(--muted);text-transform:uppercase">Qty</span>
                     <span style="font-size:11px;color:var(--muted);text-transform:uppercase">Subtotal</span>
-                    <span></span>
                 </div>
                 <div id="items-container">
                     @foreach($faktur->detailFaktur as $i => $d)
-                    <div class="item-row" id="row-{{ $i }}">
-                        <select name="items[{{ $i }}][id_barang]" onchange="updateSubtotal({{ $i }})" class="barang-select">
-                            <option value="">— Pilih Barang —</option>
-                            @foreach($barangs as $b)
-                            <option value="{{ $b->id_barang }}" data-harga="{{ $b->harga }}"
-                                {{ $d->id_barang == $b->id_barang ? 'selected' : '' }}>
-                                {{ $b->nama_barang }} (Rp {{ number_format($b->harga,0,',','.') }})
-                            </option>
-                            @endforeach
-                        </select>
-                        <input type="number" name="items[{{ $i }}][quantity]" min="1" value="{{ $d->quantity }}" onchange="updateSubtotal({{ $i }})" class="qty-input">
-                        <input type="number" name="items[{{ $i }}][subtotal_faktur]" min="0" value="{{ $d->subtotal_faktur }}" readonly style="opacity:0.7">
-                        <button type="button" onclick="removeItem(this)" style="background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.3);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:14px">×</button>
+                    <div class="item-row" id="row-{{ $i }}" style="grid-template-columns:1fr 90px 140px">
+                        <input type="text" value="{{ $d->barang->nama_barang ?? $d->id_barang }}" readonly
+                               style="opacity:0.8;cursor:default;background:var(--bg3)">
+                        <input type="hidden" name="items[{{ $i }}][id_barang]" value="{{ $d->id_barang }}">
+                        <input type="number" name="items[{{ $i }}][quantity]" min="1" value="{{ $d->quantity }}"
+                               onchange="updateSubtotal({{ $i }}, {{ $d->barang->harga ?? 0 }})"
+                               class="qty-input" id="qty-{{ $i }}">
+                        <input type="number" name="items[{{ $i }}][subtotal_faktur]" min="0" value="{{ $d->subtotal_faktur }}"
+                               readonly style="opacity:0.7" id="sub-{{ $i }}">
                     </div>
                     @endforeach
                 </div>
@@ -102,46 +96,17 @@
 </form>
  
 <script>
-let rowCount = {{ $faktur->detailFaktur->count() }};
-const barangs = @json($barangs->keyBy('id_barang'));
- 
-function addItem() {
-    const i = rowCount++;
-    const options = Object.entries(barangs).map(([id, b]) =>
-        `<option value="${id}" data-harga="${b.harga}">${b.nama_barang} (Rp ${Number(b.harga).toLocaleString('id-ID')})</option>`
-    ).join('');
-    const row = document.createElement('div');
-    row.className = 'item-row';
-    row.id = `row-${i}`;
-    row.innerHTML = `
-        <select name="items[${i}][id_barang]" onchange="updateSubtotal(${i})" class="barang-select">
-            <option value="">— Pilih Barang —</option>${options}
-        </select>
-        <input type="number" name="items[${i}][quantity]" min="1" value="1" onchange="updateSubtotal(${i})" class="qty-input">
-        <input type="number" name="items[${i}][subtotal_faktur]" min="0" value="0" readonly style="opacity:0.7">
-        <button type="button" onclick="removeItem(this)" style="background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.3);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:14px">×</button>
-    `;
-    document.getElementById('items-container').appendChild(row);
-}
- 
-function removeItem(btn) {
-    if (document.querySelectorAll('#items-container .item-row').length <= 1) return;
-    btn.closest('.item-row').remove();
-    updateGrandTotal();
-}
- 
-function updateSubtotal(i) {
-    const row = document.getElementById(`row-${i}`);
-    if (!row) return;
-    const opt = row.querySelector('.barang-select').selectedOptions[0];
-    const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
-    row.querySelectorAll('input[type="number"]')[1].value = (parseFloat(opt?.dataset?.harga || 0) * qty).toFixed(2);
+function updateSubtotal(i, harga) {
+    const qty = parseFloat(document.getElementById('qty-' + i).value) || 0;
+    document.getElementById('sub-' + i).value = (harga * qty).toFixed(2);
     updateGrandTotal();
 }
  
 function updateGrandTotal() {
     let total = 0;
-    document.querySelectorAll('#items-container input[readonly]').forEach(el => total += parseFloat(el.value) || 0);
+    document.querySelectorAll('#items-container input[readonly][type="number"]').forEach(el => {
+        total += parseFloat(el.value) || 0;
+    });
     document.getElementById('grand-total').textContent = 'Rp ' + total.toLocaleString('id-ID', {maximumFractionDigits:0});
 }
 </script>

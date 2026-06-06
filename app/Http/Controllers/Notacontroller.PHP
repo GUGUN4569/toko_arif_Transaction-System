@@ -65,7 +65,8 @@ class NotaController extends Controller
     public function show(Nota $nota)
     {
         $nota->load('customer', 'pegawai', 'detailNota.barang');
-        return view('nota.show', compact('nota'));
+        $barangs = Barang::all();
+        return view('Nota.Show', compact('nota', 'barangs'));
     }
  
     public function edit(Nota $nota)
@@ -116,8 +117,8 @@ class NotaController extends Controller
         $nota->delete();
         return redirect()->route('nota.index')->with('success', 'Nota berhasil dihapus!');
     }
-
-
+ 
+ 
     public function print(Nota $nota)
     {
         $nota->load('customer', 'pegawai', 'detailNota.barang');
