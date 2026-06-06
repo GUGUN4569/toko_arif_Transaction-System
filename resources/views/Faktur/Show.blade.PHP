@@ -29,7 +29,7 @@
                         📎 Belum Ada File
                     </span>
                 @endif
-                <a href="{{ route('faktur.edit', $faktur->id_faktur) }}" class="btn btn-secondary btn-sm">Edit</a>
+                <!-- <a href="{{ route('faktur.edit', $faktur->id_faktur) }}" class="btn btn-secondary btn-sm">Edit</a> -->
                 <form action="{{ route('faktur.destroy', $faktur->id_faktur) }}" method="POST"
                       onsubmit="return confirm('Hapus faktur {{ $faktur->id_faktur }} beserta semua detailnya?')">
                     @csrf @method('DELETE')
