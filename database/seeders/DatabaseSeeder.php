@@ -10,11 +10,22 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Buat akun admin default jika belum ada
+        // Admin
         User::firstOrCreate(
             ['email' => 'admin@tokoarif.com'],
             [
                 'name'     => 'Admin Toko Arif',
+                'role'     => 'admin',
+                'password' => Hash::make('password'),
+            ]
+        );
+ 
+        // Kasir
+        User::firstOrCreate(
+            ['email' => 'kasir@tokoarif.com'],
+            [
+                'name'     => 'Kasir Toko Arif',
+                'role'     => 'kasir',
                 'password' => Hash::make('password'),
             ]
         );
