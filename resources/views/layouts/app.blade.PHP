@@ -558,6 +558,7 @@
             </a>
         </div>
  
+        @if(Auth::user()->isAdmin())
         <div class="nav-section">
             <div class="nav-section-label">Master Data</div>
             <a href="{{ route('barang.index') }}" class="nav-item {{ request()->routeIs('barang.*') ? 'active' : '' }}">
@@ -577,6 +578,7 @@
                 Pegawai
             </a>
         </div>
+        @endif
  
         <div class="nav-section">
             <div class="nav-section-label">Transaksi</div>
@@ -584,11 +586,23 @@
                 <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 Nota Penjualan
             </a>
+            @if(Auth::user()->isAdmin())
             <a href="{{ route('faktur.index') }}" class="nav-item {{ request()->routeIs('faktur.*') ? 'active' : '' }}">
                 <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                 Faktur Pembelian
             </a>
+            @endif
         </div>
+ 
+        @if(Auth::user()->isAdmin())
+        <div class="nav-section">
+            <div class="nav-section-label">Pengaturan</div>
+            <a href="{{ route('users.index') }}" class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                Manajemen User
+            </a>
+        </div>
+        @endif
     </nav>
  
     <!-- ── User & Logout ── -->
@@ -597,8 +611,15 @@
             <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
                 {{ Auth::user()->name ?? 'Admin' }}
             </div>
-            <div style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:8px">
+            <div style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:6px">
                 {{ Auth::user()->email ?? '' }}
+            </div>
+            <div style="margin-bottom:8px">
+                @if(Auth::user()->isAdmin())
+                    <span style="display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:rgba(245,166,35,0.12);color:var(--accent);text-transform:uppercase;letter-spacing:.5px">Admin</span>
+                @else
+                    <span style="display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:rgba(34,197,94,0.12);color:var(--green);text-transform:uppercase;letter-spacing:.5px">Kasir</span>
+                @endif
             </div>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
