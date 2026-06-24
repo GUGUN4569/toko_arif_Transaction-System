@@ -28,13 +28,15 @@
 
         background:
             linear-gradient(
-                rgba(27,67,50,.85),
-                rgba(45,106,79,.85)
+                180deg,
+                rgba(13,15,20,.55),
+                rgba(13,15,20,.85)
             ),
-            url('https://images.unsplash.com/photo-1604719312566-8912e9227c6a');
+            url('{{ asset('images/toko-arif.jpeg') }}');
 
         background-size:cover;
         background-position:center;
+        background-attachment: fixed;
 
         color:var(--text);
 
@@ -87,11 +89,13 @@
  
         /* Card */
         .login-card {
-            background: var(--bg2);
-            border: 1px solid var(--border);
+            background: rgba(19,22,30,0.82);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255,255,255,0.08);
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.03);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
         }
  
         /* Header strip */

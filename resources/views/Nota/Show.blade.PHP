@@ -15,12 +15,12 @@
         <div class="card-header">
             <span class="card-title">Nota — <span class="badge badge-green font-mono">{{ $nota->id_nota }}</span></span>
             <div class="flex gap-2">
-                <a href="{{ route('nota.print', $nota->id_nota) }}" target="_blank" class="btn btn-primary btn-sm">🖨️ Cetak</a>
+                <a href="{{ route('nota.print', $nota->id_nota) }}" target="_blank" class="btn btn-primary btn-sm">Cetak</a>
                 <!-- <a href="{{ route('nota.edit', $nota->id_nota) }}" class="btn btn-secondary btn-sm">Edit</a> -->
                 <form action="{{ route('nota.destroy', $nota->id_nota) }}" method="POST"
                       onsubmit="return confirm('Hapus nota {{ $nota->id_nota }} beserta semua detailnya?')">
                     @csrf @method('DELETE')
-                    <button type="submit" class="btn btn-danger btn-sm">🗑️ Hapus</button>
+                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                 </form>
                 <a href="{{ route('nota.index') }}" class="btn btn-secondary btn-sm">← Kembali</a>
             </div>
@@ -79,7 +79,7 @@
                                         '{{ $d->id_barang }}',
                                         {{ $d->banyaknya }},
                                         {{ $d->subtotal_nota }}
-                                    )">✏️ Edit</button>
+                                    )">Edit</button>
 
                                 {{-- Tombol Hapus --}}
                                 <form action="{{ route('detail-nota.destroy', $d->id) }}" method="POST"
@@ -163,7 +163,7 @@
 <div id="modal-edit" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;">
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;width:90%;max-width:440px;box-shadow:0 24px 48px rgba(0,0,0,0.4);">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-            <h3 style="font-size:15px;font-weight:700;">✏️ Edit Item</h3>
+            <h3 style="font-size:15px;font-weight:700;">Edit Item</h3>
             <button onclick="closeEdit()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;">&times;</button>
         </div>
         <form id="form-edit" action="{{ route('detail-nota.update',$nota->id_nota) }}" method="POST">

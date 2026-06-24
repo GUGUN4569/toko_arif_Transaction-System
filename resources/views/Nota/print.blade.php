@@ -391,7 +391,7 @@
 </div>
 
 <button class="btn-print" onclick="window.print()">
-    🖨️ Cetak Nota
+     Cetak Nota
 </button>
 
 </body>

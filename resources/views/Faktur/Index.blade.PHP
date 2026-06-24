@@ -40,7 +40,7 @@
                             <button onclick="openUpload('{{ $f->id_faktur }}')"
                                 class="btn btn-sm"
                                 style="background:rgba(59,130,246,0.12);color:#60a5fa;border:1px solid rgba(59,130,246,0.25);">
-                                📎 Upload
+                                Upload
                             </button>
                             @if($f->file_faktur)
                                 <span class="badge badge-green" title="File sudah diupload">✓</span>
@@ -66,7 +66,7 @@
 <div id="modal-upload" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;">
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;width:90%;max-width:420px;box-shadow:0 24px 48px rgba(0,0,0,0.4);">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-            <h3 style="font-size:15px;font-weight:700;">📎 Upload File Faktur</h3>
+            <h3 style="font-size:15px;font-weight:700;">Upload File Faktur</h3>
             <button onclick="closeUpload()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1">&times;</button>
         </div>
         <form id="form-upload" method="POST" enctype="multipart/form-data">
