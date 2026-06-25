@@ -19,7 +19,7 @@
                     <a href="{{ Storage::url($faktur->file_faktur) }}" target="_blank" class="btn btn-primary btn-sm">
                         Lihat File Faktur
                     </a>
-                    <form action="{{ route('faktur.delete-file', $faktur->id_faktur) }}" method="POST"
+                    <form action="{{ route('faktur.delete-file', $faktur) }}" method="POST"
                           onsubmit="return confirm('Hapus file faktur ini?')">
                         @csrf @method('DELETE')
                         <button type="submit" class="btn btn-danger btn-sm">Hapus File</button>
@@ -30,7 +30,7 @@
                     </span>
                 @endif
                 <!-- <a href="{{ route('faktur.edit', $faktur->id_faktur) }}" class="btn btn-secondary btn-sm">Edit</a> -->
-                <form action="{{ route('faktur.destroy', $faktur->id_faktur) }}" method="POST"
+                <form action="{{ route('faktur.destroy', $faktur) }}" method="POST"
                       onsubmit="return confirm('Hapus faktur {{ $faktur->id_faktur }} beserta semua detailnya?')">
                     @csrf @method('DELETE')
                     <button type="submit" class="btn btn-danger btn-sm">Hapus</button>

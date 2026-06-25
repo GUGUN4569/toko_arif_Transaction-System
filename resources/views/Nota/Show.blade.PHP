@@ -15,9 +15,9 @@
         <div class="card-header">
             <span class="card-title">Nota — <span class="badge badge-green font-mono">{{ $nota->id_nota }}</span></span>
             <div class="flex gap-2">
-                <a href="{{ route('nota.print', $nota->id_nota) }}" target="_blank" class="btn btn-primary btn-sm">Cetak</a>
+                <a href="{{ route('nota.print', $nota) }}" target="_blank" class="btn btn-primary btn-sm">Cetak</a>
                 <!-- <a href="{{ route('nota.edit', $nota->id_nota) }}" class="btn btn-secondary btn-sm">Edit</a> -->
-                <form action="{{ route('nota.destroy', $nota->id_nota) }}" method="POST"
+                <form action="{{ route('nota.destroy', $nota) }}" method="POST"
                       onsubmit="return confirm('Hapus nota {{ $nota->id_nota }} beserta semua detailnya?')">
                     @csrf @method('DELETE')
                     <button type="submit" class="btn btn-danger btn-sm">Hapus</button>

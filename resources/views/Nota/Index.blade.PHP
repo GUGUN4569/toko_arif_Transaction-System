@@ -36,7 +36,7 @@
                         <div class="flex gap-2">
                             <a href="{{ route('nota.show', $n) }}" class="btn btn-secondary btn-sm">Detail</a>
                             <a href="{{ route('nota.edit', $n) }}" class="btn btn-secondary btn-sm">Edit</a>
-                            <a href="{{ route('nota.print', $n->id_nota) }}" target="_blank" class="btn btn-primary btn-sm">Cetak</a>
+                            <a href="{{ route('nota.print', $n) }}" target="_blank" class="btn btn-primary btn-sm">Cetak</a>
                             <form action="{{ route('nota.destroy', $n) }}" method="POST" onsubmit="return confirm('Hapus nota ini?')">
                                 @csrf @method('DELETE')
                                 <button class="btn btn-danger btn-sm">Hapus</button>
