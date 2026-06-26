@@ -12,24 +12,15 @@
             <div class="card-body">
                 <div class="form-row">
                     <div class="form-group">
-                        <label>ID Faktur *</label>
-                        <input type="text" name="id_faktur" value="{{ old('id_faktur') }}"
-                               class="{{ $errors->has('id_faktur') ? 'is-invalid' : '' }}"
-                               placeholder="Contoh: FKT001" maxlength="10">
-                        @error('id_faktur') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-                    <div class="form-group">
                         <label>No. Faktur *</label>
                         <input type="text" name="no_faktur" value="{{ old('no_faktur') }}"
                                class="{{ $errors->has('no_faktur') ? 'is-invalid' : '' }}"
                                placeholder="No referensi faktur supplier">
                         @error('no_faktur') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
-                </div>
-                <div class="form-row">
                     <div class="form-group">
                         <label>Tanggal *</label>
-                        <input type="date" name="tanggal_faktur" value="{{ old('tanggal_faktur', date('Y-m-d')) }}">
+                        <input type="date" name="tanggal_faktur" value="{{ old('tanggal_faktur', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}">
                     </div>
                 </div>
                 <div class="form-row">

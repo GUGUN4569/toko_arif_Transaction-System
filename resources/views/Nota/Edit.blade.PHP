@@ -16,7 +16,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Tanggal *</label>
-                        <input type="date" name="tanggal_nota" value="{{ old('tanggal_nota', $nota->tanggal_nota) }}">
+                        <input type="date" name="tanggal_nota" value="{{ old('tanggal_nota', $nota->tanggal_nota) }}" max="{{ date('Y-m-d') }}">
                     </div>
                     <div class="form-group">
                         <label>Tanda Terima</label>

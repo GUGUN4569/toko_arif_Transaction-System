@@ -16,15 +16,9 @@
             <div class="card-body">
                 <div class="form-row">
                     <div class="form-group">
-                        <label>ID Nota *</label>
-                        <input type="text" name="id_nota" value="{{ old('id_nota') }}"
-                               class="{{ $errors->has('id_nota') ? 'is-invalid' : '' }}"
-                               placeholder="Contoh: NTA001" maxlength="10">
-                        @error('id_nota') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-                    <div class="form-group">
                         <label>Tanggal *</label>
                         <input type="date" name="tanggal_nota" value="{{ old('tanggal_nota', date('Y-m-d')) }}"
+                               max="{{ date('Y-m-d') }}"
                                class="{{ $errors->has('tanggal_nota') ? 'is-invalid' : '' }}">
                         @error('tanggal_nota') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>

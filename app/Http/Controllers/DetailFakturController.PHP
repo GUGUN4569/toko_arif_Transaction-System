@@ -41,16 +41,18 @@ class DetailFakturController extends Controller
             'subtotal_faktur' => 'required|numeric|min:0',
         ]);
  
-        DB::transaction(function () use ($request) {
+        $faktur = DB::transaction(function () use ($request) {
             DetailFaktur::create($request->all());
  
             // Update total in faktur table
             $faktur = Faktur::find($request->id_faktur);
             $faktur->total_jumlah_faktur = $faktur->detailFaktur()->sum('subtotal_faktur');
             $faktur->save();
+ 
+            return $faktur;
         });
  
-        return redirect()->route('faktur.show', $request->id_faktur)
+        return redirect()->route('faktur.show', $faktur)
                          ->with('success', 'Item berhasil ditambahkan.');
     }
  
@@ -76,16 +78,18 @@ class DetailFakturController extends Controller
             'subtotal_faktur' => 'required|numeric|min:0',
         ]);
  
-        DB::transaction(function () use ($request, $detailFaktur) {
+        $faktur = DB::transaction(function () use ($request, $detailFaktur) {
             $detailFaktur->update($request->all());
  
             // Update total in faktur table
             $faktur = Faktur::find($request->id_faktur);
             $faktur->total_jumlah_faktur = $faktur->detailFaktur()->sum('subtotal_faktur');
             $faktur->save();
+ 
+            return $faktur;
         });
  
-        return redirect()->route('faktur.show', $detailFaktur->id_faktur)
+        return redirect()->route('faktur.show', $faktur)
                          ->with('success', 'Detail Faktur updated successfully.');
     }
  
@@ -94,8 +98,9 @@ class DetailFakturController extends Controller
      */
     public function destroy(DetailFaktur $detailFaktur)
     {
-        DB::transaction(function () use ($detailFaktur) {
-            $id_faktur = $detailFaktur->id_faktur;
+        $id_faktur = $detailFaktur->id_faktur;
+ 
+        DB::transaction(function () use ($detailFaktur, $id_faktur) {
             $detailFaktur->delete();
  
             // Update total in faktur table
@@ -106,7 +111,9 @@ class DetailFakturController extends Controller
             }
         });
  
-        return redirect()->route('faktur.show', $detailFaktur->id_faktur)
+        $faktur = Faktur::find($id_faktur);
+ 
+        return redirect()->route($faktur ? 'faktur.show' : 'faktur.index', $faktur)
                          ->with('success', 'Item berhasil dihapus.');
     }
 }

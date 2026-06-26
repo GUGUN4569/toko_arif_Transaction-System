@@ -41,16 +41,18 @@ class DetailNotaController extends Controller
             'subtotal_nota' => 'required|numeric|min:0',
         ]);
  
-        DB::transaction(function () use ($request) {
+        $nota = DB::transaction(function () use ($request) {
             DetailNota::create($request->all());
  
             // Update total in nota table
             $nota = Nota::find($request->id_nota);
             $nota->total_jumlah_nota = $nota->detailNota()->sum('subtotal_nota');
             $nota->save();
+ 
+            return $nota;
         });
  
-        return redirect()->route('nota.show', $request->id_nota)
+        return redirect()->route('nota.show', $nota)
                          ->with('success', 'Item berhasil ditambahkan.');
     }
  
@@ -105,7 +107,7 @@ public function update(Request $request, DetailNota $detailNota)
     }
 
     // 5. Redirect kembali ke halaman detail nota
-    return redirect()->route('nota.show', $request->id_nota)
+    return redirect()->route($nota ? 'nota.show' : 'nota.index', $nota)
                      ->with('success', 'Item nota berhasil diperbarui.');
 }
  
@@ -114,8 +116,9 @@ public function update(Request $request, DetailNota $detailNota)
      */
     public function destroy(DetailNota $detailNota)
     {
-        DB::transaction(function () use ($detailNota) {
-            $id_nota = $detailNota->id_nota;
+        $id_nota = $detailNota->id_nota;
+ 
+        DB::transaction(function () use ($detailNota, $id_nota) {
             $detailNota->delete();
  
             // Update total in nota table
@@ -126,7 +129,9 @@ public function update(Request $request, DetailNota $detailNota)
             }
         });
  
-        return redirect()->route('nota.show', $detailNota->id_nota)
+        $nota = Nota::find($id_nota);
+ 
+        return redirect()->route($nota ? 'nota.show' : 'nota.index', $nota)
                          ->with('success', 'Item berhasil dihapus.');
     }
 }

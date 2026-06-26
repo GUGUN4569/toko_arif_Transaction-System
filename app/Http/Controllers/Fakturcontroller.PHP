@@ -29,21 +29,22 @@ class FakturController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'id_faktur'      => 'required|string|max:10|unique:faktur,id_faktur',
             'no_faktur'      => 'required|string|max:50',
-            'tanggal_faktur' => 'required|date',
+            'tanggal_faktur' => 'required|date|before_or_equal:today',
             'id_supplier'    => 'nullable|exists:supplier,id_supplier',
             'id_pegawai'     => 'nullable|exists:pegawai,id_pegawai',
             'items'          => 'required|array|min:1',
             'items.*.id_barang'       => 'required|exists:barang,id_barang',
             'items.*.quantity'        => 'required|integer|min:1',
             'items.*.subtotal_faktur' => 'required|numeric|min:0',
+        ], [
+            'tanggal_faktur.before_or_equal' => 'Tanggal faktur tidak boleh lebih dari hari ini.',
         ]);
  
         $total = collect($request->items)->sum('subtotal_faktur');
  
         $faktur = Faktur::create([
-            'id_faktur'           => $request->id_faktur,
+            'id_faktur'           => $this->generateFakturId(),
             'no_faktur'           => $request->no_faktur,
             'tanggal_faktur'      => $request->tanggal_faktur,
             'id_supplier'         => $request->id_supplier,
@@ -60,7 +61,7 @@ class FakturController extends Controller
             ]);
         }
  
-        return redirect()->route('faktur.index')->with('success', 'Faktur berhasil ditambahkan!');
+        return redirect()->route('faktur.show', $faktur)->with('success', 'Faktur berhasil ditambahkan!');
     }
  
     public function show(Faktur $faktur)
@@ -83,10 +84,12 @@ class FakturController extends Controller
     {
         $request->validate([
             'no_faktur'      => 'required|string|max:50',
-            'tanggal_faktur' => 'required|date',
+            'tanggal_faktur' => 'required|date|before_or_equal:today',
             'id_supplier'    => 'nullable|exists:supplier,id_supplier',
             'id_pegawai'     => 'nullable|exists:pegawai,id_pegawai',
             'items'          => 'required|array|min:1',
+        ], [
+            'tanggal_faktur.before_or_equal' => 'Tanggal faktur tidak boleh lebih dari hari ini.',
         ]);
  
         $total = collect($request->items)->sum('subtotal_faktur');
@@ -159,5 +162,18 @@ class FakturController extends Controller
  
         return redirect()->route('faktur.show', $faktur)
             ->with('success', 'File faktur berhasil diupload!');
+    }
+
+    // ── Auto-generate ID Faktur (format: FKT001, FKT002, dst) ──
+    private function generateFakturId(): string
+    {
+        $last = Faktur::orderByDesc('id_faktur')->first();
+
+        $nextNumber = 1;
+        if ($last && preg_match('/(\d+)$/', $last->id_faktur, $match)) {
+            $nextNumber = ((int) $match[1]) + 1;
+        }
+
+        return 'FKT' . str_pad((string) $nextNumber, 3, '0', STR_PAD_LEFT);
     }
 }

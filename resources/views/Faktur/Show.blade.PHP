@@ -179,7 +179,7 @@
             <h3 style="font-size:15px;font-weight:700;">Edit Item</h3>
             <button onclick="closeEdit()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;">&times;</button>
         </div>
-        <form id="form-edit" action="{{route('detail-faktur.update', $d->id)}}" method="POST">
+        <form id="form-edit" action="{{ route('detail-faktur.update', 0) }}" method="POST">
             @csrf
             @method('PUT')
             <input type="hidden" name="id_faktur" value="{{ $faktur->id_faktur }}">

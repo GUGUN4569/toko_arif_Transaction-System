@@ -28,8 +28,7 @@ class NotaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'id_nota'      => 'required|string|max:10|unique:nota,id_nota',
-            'tanggal_nota' => 'required|date',
+            'tanggal_nota' => 'required|date|before_or_equal:today',
             'id_customer'  => 'nullable|exists:customer,id_customer',
             'id_pegawai'   => 'nullable|exists:pegawai,id_pegawai',
             'tanda_terima' => 'nullable|string|max:100',
@@ -37,12 +36,14 @@ class NotaController extends Controller
             'items.*.id_barang'   => 'required|exists:barang,id_barang',
             'items.*.banyaknya'   => 'required|integer|min:1',
             'items.*.subtotal_nota' => 'required|numeric|min:0',
+        ], [
+            'tanggal_nota.before_or_equal' => 'Tanggal nota tidak boleh lebih dari hari ini.',
         ]);
  
         $total = collect($request->items)->sum('subtotal_nota');
  
         $nota = Nota::create([
-            'id_nota'           => $request->id_nota,
+            'id_nota'           => $this->generateNotaId(),
             'tanggal_nota'      => $request->tanggal_nota,
             'id_customer'       => $request->id_customer,
             'id_pegawai'        => $request->id_pegawai,
@@ -59,7 +60,7 @@ class NotaController extends Controller
             ]);
         }
  
-        return redirect()->route('nota.index')->with('success', 'Nota berhasil ditambahkan!');
+        return redirect()->route('nota.show', $nota)->with('success', 'Nota berhasil ditambahkan!');
     }
  
     public function show(Nota $nota)
@@ -82,11 +83,13 @@ class NotaController extends Controller
     public function update(Request $request, Nota $nota)
     {
         $request->validate([
-            'tanggal_nota' => 'required|date',
+            'tanggal_nota' => 'required|date|before_or_equal:today',
             'id_customer'  => 'nullable|exists:customer,id_customer',
             'id_pegawai'   => 'nullable|exists:pegawai,id_pegawai',
             'tanda_terima' => 'nullable|string|max:100',
             'items'        => 'required|array|min:1',
+        ], [
+            'tanggal_nota.before_or_equal' => 'Tanggal nota tidak boleh lebih dari hari ini.',
         ]);
 
  
@@ -117,5 +120,18 @@ class NotaController extends Controller
     {
         $nota->load('customer', 'pegawai', 'detailNota.barang');
         return view('nota.print', compact('nota'));
+    }
+
+    // ── Auto-generate ID Nota (format: NTA001, NTA002, dst) ──
+    private function generateNotaId(): string
+    {
+        $last = Nota::orderByDesc('id_nota')->first();
+
+        $nextNumber = 1;
+        if ($last && preg_match('/(\d+)$/', $last->id_nota, $match)) {
+            $nextNumber = ((int) $match[1]) + 1;
+        }
+
+        return 'NTA' . str_pad((string) $nextNumber, 3, '0', STR_PAD_LEFT);
     }
 }

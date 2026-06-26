@@ -21,7 +21,7 @@
                     </div>
                     <div class="form-group">
                         <label>Tanggal *</label>
-                        <input type="date" name="tanggal_faktur" value="{{ old('tanggal_faktur', $faktur->tanggal_faktur) }}">
+                        <input type="date" name="tanggal_faktur" value="{{ old('tanggal_faktur', $faktur->tanggal_faktur) }}" max="{{ date('Y-m-d') }}">
                     </div>
                 </div>
                 <div class="form-row">
