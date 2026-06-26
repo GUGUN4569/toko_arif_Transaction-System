@@ -31,10 +31,6 @@
                     @error('harga') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
                 <div class="form-group">
-                    <label>Diskon (%)</label>
-                    <input type="number" name="disc" value="{{ old('disc', $barang->disc) }}" min="0" max="100" step="0.01">
-                </div>
-                <div class="form-group">
                     <label>Satuan</label>
                     <input type="text" name="satuan" value="{{ old('satuan', $barang->satuan) }}" maxlength="20">
                 </div>

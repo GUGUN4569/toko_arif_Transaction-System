@@ -40,11 +40,6 @@
                            placeholder="0" min="0" step="100">
                     @error('harga') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
-                <div class="form-group">
-                    <label>Diskon (%)</label>
-                    <input type="number" name="disc" value="{{ old('disc', 0) }}"
-                           placeholder="0" min="0" max="100" step="0.01">
-                </div>
             </div>
  
             <div class="flex gap-2 mt-4">

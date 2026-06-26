@@ -17,7 +17,6 @@
                     <th>ID Barang</th>
                     <th>Nama Barang</th>
                     <th>Harga</th>
-                    <th>Diskon</th>
                     <th>Satuan</th>
                     <th>Aksi</th>
                 </tr>
@@ -28,13 +27,6 @@
                     <td><span class="badge badge-blue font-mono">{{ $b->id_barang }}</span></td>
                     <td><strong>{{ $b->nama_barang }}</strong></td>
                     <td>Rp {{ number_format($b->harga, 0, ',', '.') }}</td>
-                    <td>
-                        @if($b->disc > 0)
-                            <span class="badge badge-gold">{{ $b->disc }}%</span>
-                        @else
-                            <span class="text-muted">—</span>
-                        @endif
-                    </td>
                     <td>{{ $b->satuan ?? '-' }}</td>
                     <td>
                         <div class="flex gap-2">

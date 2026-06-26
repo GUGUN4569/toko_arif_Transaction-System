@@ -15,7 +15,7 @@
             <tr><td style="padding:10px 0;color:var(--muted);width:130px;font-size:13px">ID Barang</td><td><span class="badge badge-blue font-mono">{{ $barang->id_barang }}</span></td></tr>
             <tr><td style="padding:10px 0;color:var(--muted);font-size:13px">Nama Barang</td><td><strong>{{ $barang->nama_barang }}</strong></td></tr>
             <tr><td style="padding:10px 0;color:var(--muted);font-size:13px">Harga</td><td style="color:var(--green)">Rp {{ number_format($barang->harga, 0, ',', '.') }}</td></tr>
-            <tr><td style="padding:10px 0;color:var(--muted);font-size:13px">Diskon</td><td>{{ $barang->disc > 0 ? $barang->disc.'%' : '—' }}</td></tr>
+
             <tr><td style="padding:10px 0;color:var(--muted);font-size:13px">Satuan</td><td>{{ $barang->satuan ?? '—' }}</td></tr>
         </table>
     </div>

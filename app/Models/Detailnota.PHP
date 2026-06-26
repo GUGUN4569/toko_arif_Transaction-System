@@ -9,7 +9,7 @@ class DetailNota extends Model
     protected $table = 'detail_nota';
  
     protected $fillable = [
-        'id_nota', 'id_barang', 'banyaknya', 'subtotal_nota'
+        'id_nota', 'id_barang', 'banyaknya', 'diskon', 'subtotal_nota'
     ];
  
     public function nota()

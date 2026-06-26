@@ -24,7 +24,6 @@ class BarangController extends Controller
             'id_barang'   => 'required|string|max:10|unique:barang,id_barang',
             'nama_barang' => 'required|string|max:100',
             'harga'       => 'required|numeric|min:0',
-            'disc'        => 'nullable|numeric|min:0|max:100',
             'satuan'      => 'nullable|string|max:20',
         ]);
  
@@ -48,7 +47,6 @@ class BarangController extends Controller
         $request->validate([
             'nama_barang' => 'required|string|max:100',
             'harga'       => 'required|numeric|min:0',
-            'disc'        => 'nullable|numeric|min:0|max:100',
             'satuan'      => 'nullable|string|max:20',
         ]);
  

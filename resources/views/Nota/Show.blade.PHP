@@ -16,7 +16,6 @@
             <span class="card-title">Nota — <span class="badge badge-green font-mono">{{ $nota->id_nota }}</span></span>
             <div class="flex gap-2">
                 <a href="{{ route('nota.print', $nota) }}" target="_blank" class="btn btn-primary btn-sm">Cetak</a>
-                <!-- <a href="{{ route('nota.edit', $nota->id_nota) }}" class="btn btn-secondary btn-sm">Edit</a> -->
                 <form action="{{ route('nota.destroy', $nota) }}" method="POST"
                       onsubmit="return confirm('Hapus nota {{ $nota->id_nota }} beserta semua detailnya?')">
                     @csrf @method('DELETE')
@@ -59,6 +58,7 @@
                         <th>#</th>
                         <th>Barang</th>
                         <th>Qty</th>
+                        <th>Diskon</th>
                         <th class="text-right">Subtotal</th>
                         <th>Aksi</th>
                     </tr>
@@ -69,6 +69,13 @@
                         <td class="text-muted">{{ $i + 1 }}</td>
                         <td>{{ $d->barang->nama_barang ?? $d->id_barang }}</td>
                         <td>{{ $d->banyaknya }} {{ $d->barang->satuan ?? '' }}</td>
+                        <td>
+                            @if($d->diskon > 0)
+                                <span class="badge badge-gold">{{ $d->diskon }}%</span>
+                            @else
+                                <span class="text-muted">—</span>
+                            @endif
+                        </td>
                         <td class="text-right">Rp {{ number_format($d->subtotal_nota, 0, ',', '.') }}</td>
                         <td>
                             <div style="display:flex;gap:6px;align-items:center">
@@ -78,6 +85,7 @@
                                         '{{ $d->id }}',
                                         '{{ $d->id_barang }}',
                                         {{ $d->banyaknya }},
+                                        {{ $d->diskon ?? 0 }},
                                         {{ $d->subtotal_nota }}
                                     )">Edit</button>
 
@@ -94,7 +102,7 @@
 
                     @if($nota->detailNota->isEmpty())
                     <tr>
-                        <td colspan="5" style="text-align:center;padding:32px 16px;color:var(--muted)">
+                        <td colspan="6" style="text-align:center;padding:32px 16px;color:var(--muted)">
                             Belum ada item. Klik "+ Tambah Item" untuk menambahkan.
                         </td>
                     </tr>
@@ -102,7 +110,7 @@
                 </tbody>
                 <tfoot>
                     <tr style="border-top:2px solid var(--border2)">
-                        <td colspan="3" style="padding:14px 16px;text-align:right;font-weight:700;text-transform:uppercase;font-size:12px;color:var(--muted);letter-spacing:.5px">Total</td>
+                        <td colspan="4" style="padding:14px 16px;text-align:right;font-weight:700;text-transform:uppercase;font-size:12px;color:var(--muted);letter-spacing:.5px">Total</td>
                         <td style="padding:14px 16px;text-align:right;font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--green)">
                             Rp {{ number_format($nota->total_jumlah_nota, 0, ',', '.') }}
                         </td>
@@ -132,16 +140,22 @@
                 <select name="id_barang" id="modal-barang" onchange="hitungSubtotal()" required>
                     <option value="">— Pilih Barang —</option>
                     @foreach($barangs as $b)
-                    <option value="{{ $b->id_barang }}" data-harga="{{ $b->harga }}" data-disc="{{ $b->disc ?? 0 }}">
+                    <option value="{{ $b->id_barang }}" data-harga="{{ $b->harga }}">
                         {{ $b->nama_barang }} (Rp {{ number_format($b->harga, 0, ',', '.') }})
                     </option>
                     @endforeach
                 </select>
             </div>
 
-            <div class="form-group">
-                <label>Banyaknya *</label>
-                <input type="number" name="banyaknya" id="modal-qty" min="1" value="1" onchange="hitungSubtotal()" required>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Banyaknya *</label>
+                    <input type="number" name="banyaknya" id="modal-qty" min="1" value="1" onchange="hitungSubtotal()" required>
+                </div>
+                <div class="form-group">
+                    <label>Diskon (%)</label>
+                    <input type="number" name="diskon" id="modal-diskon" min="0" max="100" value="0" onchange="hitungSubtotal()">
+                </div>
             </div>
 
             <div class="form-group">
@@ -176,16 +190,22 @@
                 <select name="id_barang" id="edit-barang" onchange="hitungSubtotalEdit()" required>
                     <option value="">— Pilih Barang —</option>
                     @foreach($barangs as $b)
-                    <option value="{{ $b->id_barang }}" data-harga="{{ $b->harga }}" data-disc="{{ $b->disc ?? 0 }}">
+                    <option value="{{ $b->id_barang }}" data-harga="{{ $b->harga }}">
                         {{ $b->nama_barang }} (Rp {{ number_format($b->harga, 0, ',', '.') }})
                     </option>
                     @endforeach
                 </select>
             </div>
 
-            <div class="form-group">
-                <label>Banyaknya *</label>
-                <input type="number" name="banyaknya" id="edit-qty" min="1" value="1" onchange="hitungSubtotalEdit()" required>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Banyaknya *</label>
+                    <input type="number" name="banyaknya" id="edit-qty" min="1" value="1" onchange="hitungSubtotalEdit()" required>
+                </div>
+                <div class="form-group">
+                    <label>Diskon (%)</label>
+                    <input type="number" name="diskon" id="edit-diskon" min="0" max="100" value="0" onchange="hitungSubtotalEdit()">
+                </div>
             </div>
 
             <div class="form-group">
@@ -212,26 +232,24 @@ function closeTambah() {
 function hitungSubtotal() {
     const sel = document.getElementById('modal-barang');
     const opt = sel.selectedOptions[0];
-    const harga = parseFloat(opt?.dataset?.harga || 0);
-    const disc  = parseFloat(opt?.dataset?.disc  || 0);
-    const qty   = parseFloat(document.getElementById('modal-qty').value) || 0;
-    document.getElementById('modal-subtotal').value = (harga * qty * (1 - disc / 100)).toFixed(2);
+    const harga  = parseFloat(opt?.dataset?.harga || 0);
+    const qty    = parseFloat(document.getElementById('modal-qty').value) || 0;
+    const diskon = parseFloat(document.getElementById('modal-diskon').value) || 0;
+    document.getElementById('modal-subtotal').value = (harga * qty * (1 - diskon / 100)).toFixed(2);
 }
 document.getElementById('modal-tambah').addEventListener('click', function(e) {
     if (e.target === this) closeTambah();
 });
 
 /* ---- Modal Edit ---- */
-function openEdit(id, idBarang, qty, subtotal) {
-    // Set action form ke route update
+function openEdit(id, idBarang, qty, diskon, subtotal) {
     document.getElementById('form-edit').action = '{{ url("detail-nota") }}/' + id;
 
-    // Set nilai barang
     const sel = document.getElementById('edit-barang');
     sel.value = idBarang;
 
-    // Set qty & subtotal
     document.getElementById('edit-qty').value = qty;
+    document.getElementById('edit-diskon').value = diskon;
     document.getElementById('edit-subtotal').value = subtotal;
 
     document.getElementById('modal-edit').style.display = 'flex';
@@ -242,10 +260,10 @@ function closeEdit() {
 function hitungSubtotalEdit() {
     const sel = document.getElementById('edit-barang');
     const opt = sel.selectedOptions[0];
-    const harga = parseFloat(opt?.dataset?.harga || 0);
-    const disc  = parseFloat(opt?.dataset?.disc  || 0);
-    const qty   = parseFloat(document.getElementById('edit-qty').value) || 0;
-    document.getElementById('edit-subtotal').value = (harga * qty * (1 - disc / 100)).toFixed(2);
+    const harga  = parseFloat(opt?.dataset?.harga || 0);
+    const qty    = parseFloat(document.getElementById('edit-qty').value) || 0;
+    const diskon = parseFloat(document.getElementById('edit-diskon').value) || 0;
+    document.getElementById('edit-subtotal').value = (harga * qty * (1 - diskon / 100)).toFixed(2);
 }
 document.getElementById('modal-edit').addEventListener('click', function(e) {
     if (e.target === this) closeEdit();

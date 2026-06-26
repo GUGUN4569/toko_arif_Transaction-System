@@ -38,20 +38,27 @@ class DetailNotaController extends Controller
             'id_nota' => 'required|exists:nota,id_nota',
             'id_barang' => 'required|exists:barang,id_barang',
             'banyaknya' => 'required|integer|min:1',
+            'diskon' => 'nullable|numeric|min:0|max:100',
             'subtotal_nota' => 'required|numeric|min:0',
         ]);
- 
+
         $nota = DB::transaction(function () use ($request) {
-            DetailNota::create($request->all());
- 
+            DetailNota::create([
+                'id_nota'       => $request->id_nota,
+                'id_barang'     => $request->id_barang,
+                'banyaknya'     => $request->banyaknya,
+                'diskon'        => $request->diskon ?? 0,
+                'subtotal_nota' => $request->subtotal_nota,
+            ]);
+
             // Update total in nota table
             $nota = Nota::find($request->id_nota);
             $nota->total_jumlah_nota = $nota->detailNota()->sum('subtotal_nota');
             $nota->save();
- 
+
             return $nota;
         });
- 
+
         return redirect()->route('nota.show', $nota)
                          ->with('success', 'Item berhasil ditambahkan.');
     }
@@ -75,32 +82,32 @@ public function update(Request $request, DetailNota $detailNota)
     $request->validate([
         'id_barang' => 'required',
         'banyaknya' => 'required|integer|min:1',
+        'diskon'    => 'nullable|numeric|min:0|max:100',
     ]);
 
     // 2. Hitung subtotal di sisi server (Backend) agar lebih aman
-    // Asumsi Anda memiliki model Barang
     $barang = \App\Models\Barang::find($request->id_barang);
-    $harga = $barang->harga ?? 0;
-    $disc = $barang->disc ?? 0;
-    
-    // Rumus: (Harga x Qty) dikurangi diskon
-    $subtotal = ($harga * $request->banyaknya) * (1 - $disc / 100);
+    $harga  = $barang->harga ?? 0;
+    $diskon = $request->diskon ?? 0;
+
+    // Rumus: (Harga x Qty) dikurangi diskon manual (per item)
+    $subtotal = ($harga * $request->banyaknya) * (1 - $diskon / 100);
 
     // 3. Update data pada baris DetailNota ini saja
     $detailNota->update([
         'id_barang'     => $request->id_barang,
         'banyaknya'     => $request->banyaknya,
-        'subtotal_nota' => $subtotal, 
+        'diskon'        => $diskon,
+        'subtotal_nota' => $subtotal,
     ]);
 
     // 4. Update `total_jumlah_nota` pada tabel induk (Nota)
     $nota = \App\Models\Nota::find($detailNota->id_nota);
-    
-    
+
+
     if ($nota) {
-        // Jumlahkan semua subtotal_nota dari detail_nota yang memiliki id_nota yang sama
         $totalKeseluruhan = $nota->detailNota()->sum('subtotal_nota');
-        
+
         $nota->update([
             'total_jumlah_nota' => $totalKeseluruhan
         ]);
