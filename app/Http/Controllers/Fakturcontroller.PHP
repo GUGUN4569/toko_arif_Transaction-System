@@ -7,8 +7,11 @@ use App\Models\DetailFaktur;
 use App\Models\Supplier;
 use App\Models\Pegawai;
 use App\Models\Barang;
+use App\Http\Requests\StoreFakturRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Throwable;
  
 class FakturController extends Controller
 {
@@ -26,42 +29,54 @@ class FakturController extends Controller
         return view('Faktur.Create', compact('suppliers', 'pegawais', 'barangs'));
     }
  
-    public function store(Request $request)
+    public function store(StoreFakturRequest $request)
     {
-        $request->validate([
-            'no_faktur'      => 'required|string|max:50',
-            'tanggal_faktur' => 'required|date|before_or_equal:today',
-            'id_supplier'    => 'nullable|exists:supplier,id_supplier',
-            'id_pegawai'     => 'nullable|exists:pegawai,id_pegawai',
-            'items'          => 'required|array|min:1',
-            'items.*.id_barang'       => 'required|exists:barang,id_barang',
-            'items.*.quantity'        => 'required|integer|min:1',
-            'items.*.subtotal_faktur' => 'required|numeric|min:0',
-        ], [
-            'tanggal_faktur.before_or_equal' => 'Tanggal faktur tidak boleh lebih dari hari ini.',
-        ]);
- 
-        $total = collect($request->items)->sum('subtotal_faktur');
- 
-        $faktur = Faktur::create([
-            'id_faktur'           => $this->generateFakturId(),
-            'no_faktur'           => $request->no_faktur,
-            'tanggal_faktur'      => $request->tanggal_faktur,
-            'id_supplier'         => $request->id_supplier,
-            'id_pegawai'          => $request->id_pegawai,
-            'total_jumlah_faktur' => $total,
-        ]);
- 
-        foreach ($request->items as $item) {
-            DetailFaktur::create([
-                'id_faktur'       => $faktur->id_faktur,
-                'id_barang'       => $item['id_barang'],
-                'quantity'        => $item['quantity'],
-                'subtotal_faktur' => $item['subtotal_faktur'],
-            ]);
+        // $request sudah otomatis divalidasi oleh StoreFakturRequest
+        // sebelum sampai ke method ini (header faktur + items barang).
+        $validated = $request->validated();
+        $total     = collect($validated['items'])->sum('subtotal_faktur');
+
+        try {
+            $faktur = DB::transaction(function () use ($validated, $total) {
+
+                // 1. Simpan header faktur
+                $faktur = Faktur::create([
+                    'id_faktur'           => $this->generateFakturId(),
+                    'no_faktur'           => $validated['no_faktur'],
+                    'tanggal_faktur'      => $validated['tanggal_faktur'],
+                    'id_supplier'         => $validated['id_supplier'] ?? null,
+                    'id_pegawai'          => $validated['id_pegawai'] ?? null,
+                    'total_jumlah_faktur' => $total,
+                ]);
+
+                // 2. Siapkan payload detail (tanpa id_faktur,
+                //    karena createMany() otomatis mengisi FK dari relasi)
+                $itemsPayload = array_map(static function (array $item) {
+                    return [
+                        'id_barang'       => $item['id_barang'],
+                        'quantity'        => $item['quantity'],
+                        'subtotal_faktur' => $item['subtotal_faktur'],
+                    ];
+                }, $validated['items']);
+
+                // 3. Simpan semua detail barang sekaligus lewat relasi hasMany
+                $faktur->detailFaktur()->createMany($itemsPayload);
+
+                return $faktur;
+            });
+        } catch (Throwable $e) {
+            // Jika ada error di tengah jalan (mis. constraint FK gagal),
+            // seluruh insert (header + detail) otomatis di-rollback oleh DB::transaction
+            report($e); // catat ke log Laravel
+
+            return back()
+                ->withInput()
+                ->with('error', 'Gagal menyimpan faktur. Silakan coba lagi. ('.$e->getMessage().')');
         }
- 
-        return redirect()->route('faktur.show', $faktur)->with('success', 'Faktur berhasil ditambahkan!');
+
+        return redirect()
+            ->route('faktur.show', $faktur)
+            ->with('success', 'Faktur berhasil ditambahkan!');
     }
  
     public function show(Faktur $faktur)
