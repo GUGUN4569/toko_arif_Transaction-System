@@ -53,4 +53,10 @@ class Faktur extends Model
     {
         return $this->hasMany(DetailFaktur::class, 'id_faktur', 'id_faktur');
     }
+
+    // ── Cek apakah faktur sudah terkunci (lebih dari 14 hari) ──
+    public function isLocked(): bool
+    {
+        return \Carbon\Carbon::parse($this->tanggal_faktur)->lt(now()->subDays(14)->startOfDay());
+    }
 }

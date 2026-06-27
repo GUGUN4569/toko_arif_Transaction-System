@@ -55,4 +55,10 @@ class Nota extends Model
     {
         return $this->hasMany(DetailNota::class, 'id_nota', 'id_nota');
     }
+
+    // ── Cek apakah nota sudah terkunci (lebih dari 14 hari) ──
+    public function isLocked(): bool
+    {
+        return \Carbon\Carbon::parse($this->tanggal_nota)->lt(now()->subDays(14)->startOfDay());
+    }
 }

@@ -140,10 +140,13 @@ class FakturController extends Controller
                     'total_jumlah_faktur' => $total,
                 ]);
          
-                // 2. Hapus detail lama agar digantikan yang baru dari form edit
+                // 2. Catat semua id_barang lama sebelum dihapus, untuk pengecekan cleanup nanti
+                $idBarangLama = $faktur->detailFaktur()->pluck('id_barang')->unique()->toArray();
+
+                // 3. Hapus detail lama agar digantikan yang baru dari form edit
                 $faktur->detailFaktur()->delete();
                 
-                // 3. Simpan item-item baru hasil editan kasir
+                // 4. Simpan item-item baru hasil editan kasir
                 foreach ($request->items as $item) {
                     $barang = Barang::where('nama_barang', $item['nama_barang'])->first();
 
@@ -167,6 +170,16 @@ class FakturController extends Controller
                         'subtotal_faktur' => $item['subtotal_faktur'],
                     ]);
                 }
+
+                // 5. CLEANUP: hapus barang lama dari Master Barang jika sudah tidak dipakai sama sekali
+                foreach ($idBarangLama as $idBarang) {
+                    $masihDigunakan = DetailFaktur::where('id_barang', $idBarang)->exists()
+                                   || \App\Models\DetailNota::where('id_barang', $idBarang)->exists();
+
+                    if (!$masihDigunakan) {
+                        Barang::where('id_barang', $idBarang)->delete();
+                    }
+                }
             });
         } catch (Throwable $e) {
             report($e);
@@ -181,8 +194,25 @@ class FakturController extends Controller
         if ($faktur->file_faktur) {
             Storage::disk('public')->delete($faktur->file_faktur);
         }
-        $faktur->detailFaktur()->delete();
-        $faktur->delete();
+
+        DB::transaction(function () use ($faktur) {
+            // Catat semua id_barang yang dipakai faktur ini sebelum item-nya dihapus
+            $idBarangTerpakai = $faktur->detailFaktur()->pluck('id_barang')->unique()->toArray();
+
+            $faktur->detailFaktur()->delete();
+            $faktur->delete();
+
+            // CLEANUP: hapus barang dari Master Barang jika sudah tidak dipakai di transaksi mana pun
+            foreach ($idBarangTerpakai as $idBarang) {
+                $masihDigunakan = DetailFaktur::where('id_barang', $idBarang)->exists()
+                               || \App\Models\DetailNota::where('id_barang', $idBarang)->exists();
+
+                if (!$masihDigunakan) {
+                    Barang::where('id_barang', $idBarang)->delete();
+                }
+            }
+        });
+
         return redirect()->route('faktur.index')->with('success', 'Faktur berhasil dihapus!');
     }
  

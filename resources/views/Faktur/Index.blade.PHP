@@ -35,6 +35,7 @@
                     <td>
                         <div class="flex gap-2">
                             <a href="{{ route('faktur.show', $f) }}" class="btn btn-secondary btn-sm">Detail</a>
+                            @unless($f->isLocked())
                             <a href="{{ route('faktur.edit', $f) }}" class="btn btn-secondary btn-sm">Edit</a>
                             <!-- Tombol Upload -->
                             <button onclick="openUpload('{{ $f->id_faktur }}')"
@@ -42,13 +43,18 @@
                                 style="background:rgba(59,130,246,0.12);color:#60a5fa;border:1px solid rgba(59,130,246,0.25);">
                                 Upload
                             </button>
+                            @endunless
                             @if($f->file_faktur)
                                 <span class="badge badge-green" title="File sudah diupload">✓</span>
                             @endif
+                            @unless($f->isLocked())
                             <form action="{{ route('faktur.destroy', $f) }}" method="POST" onsubmit="return confirm('Hapus faktur ini?')">
                                 @csrf @method('DELETE')
                                 <button class="btn btn-danger btn-sm">Hapus</button>
                             </form>
+                            @else
+                            <span class="badge" style="background:rgba(107,114,128,0.15);color:#9ca3af;border:1px solid rgba(107,114,128,0.3)">🔒</span>
+                            @endunless
                         </div>
                     </td>
                 </tr>

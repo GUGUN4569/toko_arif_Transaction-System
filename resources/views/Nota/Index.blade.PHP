@@ -35,12 +35,18 @@
                     <td>
                         <div class="flex gap-2">
                             <a href="{{ route('nota.show', $n) }}" class="btn btn-secondary btn-sm">Detail</a>
+                            @unless($n->isLocked())
                             <a href="{{ route('nota.edit', $n) }}" class="btn btn-secondary btn-sm">Edit</a>
+                            @endunless
                             <a href="{{ route('nota.print', $n) }}" target="_blank" class="btn btn-primary btn-sm">Cetak</a>
+                            @unless($n->isLocked())
                             <form action="{{ route('nota.destroy', $n) }}" method="POST" onsubmit="return confirm('Hapus nota ini?')">
                                 @csrf @method('DELETE')
                                 <button class="btn btn-danger btn-sm">Hapus</button>
                             </form>
+                            @else
+                            <span class="badge" style="background:rgba(107,114,128,0.15);color:#9ca3af;border:1px solid rgba(107,114,128,0.3)">🔒</span>
+                            @endunless
                         </div>
                     </td>
                 </tr>

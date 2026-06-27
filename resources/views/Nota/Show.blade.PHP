@@ -15,12 +15,17 @@
         <div class="card-header">
             <span class="card-title">Nota — <span class="badge badge-green font-mono">{{ $nota->id_nota }}</span></span>
             <div class="flex gap-2">
+                @if($nota->isLocked())
+                    <span class="badge" style="background:rgba(107,114,128,0.15);color:#9ca3af;border:1px solid rgba(107,114,128,0.3)">🔒 Terkunci (&gt;14 hari)</span>
+                @endif
                 <a href="{{ route('nota.print', $nota) }}" target="_blank" class="btn btn-primary btn-sm">Cetak</a>
+                @unless($nota->isLocked())
                 <form action="{{ route('nota.destroy', $nota) }}" method="POST"
                       onsubmit="return confirm('Hapus nota {{ $nota->id_nota }} beserta semua detailnya?')">
                     @csrf @method('DELETE')
                     <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                 </form>
+                @endunless
                 <a href="{{ route('nota.index') }}" class="btn btn-secondary btn-sm">← Kembali</a>
             </div>
         </div>
@@ -49,7 +54,9 @@
     <div class="card">
         <div class="card-header">
             <span class="card-title">Item Penjualan</span>
+            @unless($nota->isLocked())
             <button type="button" class="btn btn-primary btn-sm" onclick="openTambah()">+ Tambah Item</button>
+            @endunless
         </div>
         <div class="table-wrap">
             <table>
@@ -60,7 +67,9 @@
                         <th>Qty</th>
                         <th>Diskon</th>
                         <th class="text-right">Subtotal</th>
+                        @unless($nota->isLocked())
                         <th>Aksi</th>
+                        @endunless
                     </tr>
                 </thead>
                 <tbody>
@@ -77,6 +86,7 @@
                             @endif
                         </td>
                         <td class="text-right">Rp {{ number_format($d->subtotal_nota, 0, ',', '.') }}</td>
+                        @unless($nota->isLocked())
                         <td>
                             <div style="display:flex;gap:6px;align-items:center">
                                 {{-- Tombol Edit --}}
@@ -97,6 +107,7 @@
                                 </form>
                             </div>
                         </td>
+                        @endunless
                     </tr>
                     @endforeach
 

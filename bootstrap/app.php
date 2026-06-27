@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Daftarkan alias middleware
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminOnly::class,
+            'lock.transaction' => \App\Http\Middleware\LockExpiredTransaction::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

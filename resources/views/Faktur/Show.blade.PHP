@@ -21,25 +21,32 @@
         <div class="card-header">
             <span class="card-title">Faktur — <span class="badge badge-gold font-mono">{{ $faktur->no_faktur }}</span></span>
             <div class="flex gap-2">
+                @if($faktur->isLocked())
+                    <span class="badge" style="background:rgba(107,114,128,0.15);color:#9ca3af;border:1px solid rgba(107,114,128,0.3)">🔒 Terkunci (&gt;14 hari)</span>
+                @endif
                 @if($faktur->file_faktur)
                     <a href="{{ Storage::url($faktur->file_faktur) }}" target="_blank" class="btn btn-primary btn-sm">
                         Lihat File Faktur
                     </a>
+                    @unless($faktur->isLocked())
                     <form action="{{ route('faktur.delete-file', $faktur) }}" method="POST"
                           onsubmit="return confirm('Hapus file faktur ini?')">
                         @csrf @method('DELETE')
                         <button type="submit" class="btn btn-danger btn-sm">Hapus File</button>
                     </form>
+                    @endunless
                 @else
                     <span class="btn btn-sm" style="background:var(--bg3);color:var(--muted);border:1px solid var(--border);cursor:default;">
                         Belum Ada File
                     </span>
                 @endif
+                @unless($faktur->isLocked())
                 <form action="{{ route('faktur.destroy', $faktur) }}" method="POST"
                       onsubmit="return confirm('Hapus faktur {{ $faktur->id_faktur }} beserta semua detailnya?')">
                     @csrf @method('DELETE')
                     <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                 </form>
+                @endunless
                 <a href="{{ route('faktur.index') }}" class="btn btn-secondary btn-sm">← Kembali</a>
             </div>
         </div>
@@ -68,7 +75,9 @@
     <div class="card">
         <div class="card-header">
             <span class="card-title">Item Pembelian</span>
+            @unless($faktur->isLocked())
             <button type="button" class="btn btn-primary btn-sm" onclick="openTambah()">+ Tambah Item</button>
+            @endunless
         </div>
         <div class="table-wrap">
             <table>
@@ -78,7 +87,9 @@
                         <th>Barang</th>
                         <th>Quantity</th>
                         <th class="text-right">Subtotal</th>
+                        @unless($faktur->isLocked())
                         <th>Aksi</th>
+                        @endunless
                     </tr>
                 </thead>
                 <tbody>
@@ -93,6 +104,7 @@
                         <td>{{ $namaBarangAsli }}</td>
                         <td>{{ $d->quantity }} {{ $satuanBarangAsli }}</td>
                         <td class="text-right">Rp {{ number_format($d->subtotal_faktur, 0, ',', '.') }}</td>
+                        @unless($faktur->isLocked())
                         <td>
                             <div style="display:flex;gap:6px;align-items:center">
                                 {{-- Tombol Edit membawa data string teks nama barang dan satuan secara utuh --}}
@@ -114,6 +126,7 @@
                                 </form>
                             </div>
                         </td>
+                        @endunless
                     </tr>
                     @endforeach
 
