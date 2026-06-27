@@ -25,7 +25,9 @@ class StoreFakturRequest extends FormRequest
     return [
         'no_faktur'           => 'required|string|max:50',
         'tanggal_faktur'      => 'required|date',
-        'id_supplier'         => 'nullable|exists:supplier,id_supplier',
+        'nama_supplier'       => 'nullable|string|max:100',
+        'alamat_supplier'     => 'nullable|string|max:255',
+        'no_telp_supplier'    => 'nullable|string|max:20',
         'id_pegawai'          => 'nullable|exists:pegawai,id_pegawai',
         
         // HAPUS ATAU JANGAN MASUKKAN 'total_jumlah_faktur' => 'required' DI SINI

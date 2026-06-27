@@ -27,15 +27,29 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Supplier</label>
-                        <select name="id_supplier">
-                            <option value="">— Pilih Supplier —</option>
+                        <input type="text" name="nama_supplier" list="supplier-list" autocomplete="off"
+                               value="{{ old('nama_supplier', $faktur->supplier->nama_supplier ?? '') }}"
+                               placeholder="Pilih atau ketik nama supplier baru"
+                               oninput="toggleSupplierBaru(this.value)">
+                        <datalist id="supplier-list">
                             @foreach($suppliers as $s)
-                            <option value="{{ $s->id_supplier }}" {{ (old('id_supplier', $faktur->id_supplier) == $s->id_supplier) ? 'selected' : '' }}>
-                                {{ $s->nama_supplier }}
-                            </option>
+                            <option value="{{ $s->nama_supplier }}"></option>
                             @endforeach
-                        </select>
+                        </datalist>
+                        <small class="text-muted" style="font-size:11px">Kalau nama belum ada di daftar, supplier baru akan otomatis dibuat.</small>
                     </div>
+                </div>
+                <div class="form-row" id="supplier-baru-fields" style="display:none">
+                    <div class="form-group">
+                        <label>Alamat Supplier <span class="text-muted" style="font-weight:400">(supplier baru)</span></label>
+                        <input type="text" name="alamat_supplier" value="{{ old('alamat_supplier') }}" placeholder="Alamat supplier">
+                    </div>
+                    <div class="form-group">
+                        <label>No. Telp Supplier <span class="text-muted" style="font-weight:400">(supplier baru)</span></label>
+                        <input type="text" name="no_telp_supplier" value="{{ old('no_telp_supplier') }}" placeholder="08xxxxxxxxxx">
+                    </div>
+                </div>
+                <div class="form-row">
                     <div class="form-group">
                         <label>Pegawai</label>
                         <select name="id_pegawai">
@@ -104,6 +118,13 @@
 <script>
 // Menghitung index awal baris berdasarkan item yang sudah ada dari database
 let rowCount = {{ $faktur->detailFaktur->count() }};
+const namaSupplierTersedia = @json($suppliers->pluck('nama_supplier'));
+
+function toggleSupplierBaru(value) {
+    const sudahAda = namaSupplierTersedia.some(n => n.toLowerCase() === value.trim().toLowerCase());
+    document.getElementById('supplier-baru-fields').style.display = (value.trim() && !sudahAda) ? 'grid' : 'none';
+}
+toggleSupplierBaru(document.querySelector('input[name="nama_supplier"]').value);
  
 function addItem() {
     const i = rowCount++;
