@@ -63,24 +63,26 @@
             <div class="card-body">
                 @error('items') <div class="alert alert-danger">{{ $message }}</div> @enderror
  
-                <div style="display:grid;grid-template-columns:1fr 90px 140px 36px;gap:8px;margin-bottom:8px;padding:0 2px">
+                <div style="display:grid;grid-template-columns:1fr 70px 80px 140px 36px;gap:8px;margin-bottom:8px;padding:0 2px">
                     <span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Barang</span>
                     <span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Qty</span>
+                    <span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Diskon %</span>
                     <span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Subtotal</span>
                     <span></span>
                 </div>
  
                 <div id="items-container">
-                    <div class="item-row" id="row-0">
+                    <div class="item-row" id="row-0" style="grid-template-columns:1fr 70px 80px 140px 36px">
                         <select name="items[0][id_barang]" onchange="updateSubtotal(0)" class="barang-select">
                             <option value="">— Pilih Barang —</option>
                             @foreach($barangs as $b)
-                            <option value="{{ $b->id_barang }}" data-harga="{{ $b->harga }}" data-disc="{{ $b->disc }}">
+                            <option value="{{ $b->id_barang }}" data-harga="{{ $b->harga }}">
                                 {{ $b->nama_barang }} (Rp {{ number_format($b->harga, 0, ',', '.') }})
                             </option>
                             @endforeach
                         </select>
                         <input type="number" name="items[0][banyaknya]" min="1" value="1" placeholder="Qty" onchange="updateSubtotal(0)" class="qty-input">
+                        <input type="number" name="items[0][diskon]" min="0" max="100" value="0" placeholder="0" onchange="updateSubtotal(0)" class="diskon-input">
                         <input type="number" name="items[0][subtotal_nota]" min="0" value="0" readonly style="opacity:0.7;cursor:not-allowed">
                         <button type="button" onclick="removeItem(this)" style="background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.3);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:14px">×</button>
                     </div>
@@ -114,17 +116,19 @@ const barangs = @json($barangs->keyBy('id_barang'));
 function addItem() {
     const i = rowCount++;
     const options = Object.entries(barangs).map(([id, b]) =>
-        `<option value="${id}" data-harga="${b.harga}" data-disc="${b.disc}">${b.nama_barang} (Rp ${Number(b.harga).toLocaleString('id-ID')})</option>`
+        `<option value="${id}" data-harga="${b.harga}">${b.nama_barang} (Rp ${Number(b.harga).toLocaleString('id-ID')})</option>`
     ).join('');
  
     const row = document.createElement('div');
     row.className = 'item-row';
     row.id = `row-${i}`;
+    row.style.gridTemplateColumns = '1fr 70px 80px 140px 36px';
     row.innerHTML = `
         <select name="items[${i}][id_barang]" onchange="updateSubtotal(${i})" class="barang-select">
             <option value="">— Pilih Barang —</option>${options}
         </select>
         <input type="number" name="items[${i}][banyaknya]" min="1" value="1" placeholder="Qty" onchange="updateSubtotal(${i})" class="qty-input">
+        <input type="number" name="items[${i}][diskon]" min="0" max="100" value="0" placeholder="0" onchange="updateSubtotal(${i})" class="diskon-input">
         <input type="number" name="items[${i}][subtotal_nota]" min="0" value="0" readonly style="opacity:0.7;cursor:not-allowed">
         <button type="button" onclick="removeItem(this)" style="background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.3);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:14px">×</button>
     `;
@@ -143,11 +147,11 @@ function updateSubtotal(i) {
     if (!row) return;
     const sel = row.querySelector('.barang-select');
     const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
+    const diskon = parseFloat(row.querySelector('.diskon-input').value) || 0;
     const opt = sel.selectedOptions[0];
     const harga = parseFloat(opt?.dataset?.harga || 0);
-    const disc  = parseFloat(opt?.dataset?.disc  || 0);
-    const sub   = harga * qty * (1 - disc / 100);
-    row.querySelectorAll('input[type="number"]')[1].value = sub.toFixed(2);
+    const sub   = harga * qty * (1 - diskon / 100);
+    row.querySelectorAll('input[type="number"]')[2].value = sub.toFixed(2);
     updateGrandTotal();
 }
  

@@ -55,21 +55,26 @@
                 <span class="card-title">Detail Barang</span>
             </div>
             <div class="card-body">
-                <div style="display:grid;grid-template-columns:1fr 90px 140px;gap:8px;margin-bottom:8px;padding:0 2px">
+                <div style="display:grid;grid-template-columns:1fr 70px 80px 140px;gap:8px;margin-bottom:8px;padding:0 2px">
                     <span style="font-size:11px;color:var(--muted);text-transform:uppercase">Barang</span>
                     <span style="font-size:11px;color:var(--muted);text-transform:uppercase">Qty</span>
+                    <span style="font-size:11px;color:var(--muted);text-transform:uppercase">Diskon %</span>
                     <span style="font-size:11px;color:var(--muted);text-transform:uppercase">Subtotal</span>
                 </div>
                 <div id="items-container">
                     @foreach($nota->detailNota as $i => $d)
-                    <div class="item-row" id="row-{{ $i }}" style="grid-template-columns:1fr 90px 140px">
+                    <div class="item-row" id="row-{{ $i }}" style="grid-template-columns:1fr 70px 80px 140px">
                         {{-- Nama barang ditampilkan, id dikirim tersembunyi --}}
                         <input type="text" value="{{ $d->barang->nama_barang ?? $d->id_barang }}" readonly
                                style="opacity:0.8;cursor:default;background:var(--bg3)">
+                        <input type="hidden" name="items[{{ $i }}][id]" value="{{ $d->id }}">
                         <input type="hidden" name="items[{{ $i }}][id_barang]" value="{{ $d->id_barang }}">
                         <input type="number" name="items[{{ $i }}][banyaknya]" min="1" value="{{ $d->banyaknya }}"
-                               onchange="updateSubtotal({{ $i }}, {{ $d->barang->harga ?? 0 }}, {{ $d->barang->disc ?? 0 }})"
+                               onchange="updateSubtotal({{ $i }}, {{ $d->barang->harga ?? 0 }})"
                                class="qty-input" id="qty-{{ $i }}">
+                        <input type="number" name="items[{{ $i }}][diskon]" min="0" max="100" value="{{ $d->diskon ?? 0 }}"
+                               onchange="updateSubtotal({{ $i }}, {{ $d->barang->harga ?? 0 }})"
+                               class="diskon-input" id="diskon-{{ $i }}">
                         <input type="number" name="items[{{ $i }}][subtotal_nota]" min="0" value="{{ $d->subtotal_nota }}"
                                readonly style="opacity:0.7" id="sub-{{ $i }}">
                     </div>
@@ -96,9 +101,10 @@
 </form>
  
 <script>
-function updateSubtotal(i, harga, disc) {
+function updateSubtotal(i, harga) {
     const qty = parseFloat(document.getElementById('qty-' + i).value) || 0;
-    document.getElementById('sub-' + i).value = (harga * qty * (1 - disc / 100)).toFixed(2);
+    const diskon = parseFloat(document.getElementById('diskon-' + i).value) || 0;
+    document.getElementById('sub-' + i).value = (harga * qty * (1 - diskon / 100)).toFixed(2);
     updateGrandTotal();
 }
  

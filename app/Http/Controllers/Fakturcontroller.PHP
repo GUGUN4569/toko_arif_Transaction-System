@@ -167,13 +167,23 @@ class FakturController extends Controller
     // ── Auto-generate ID Faktur (format: FKT001, FKT002, dst) ──
     private function generateFakturId(): string
     {
-        $last = Faktur::orderByDesc('id_faktur')->first();
+        $last = Faktur::where('id_faktur', 'like', 'FKT%')
+            ->orderByRaw('CAST(SUBSTRING(id_faktur, 4) AS UNSIGNED) DESC')
+            ->first();
 
         $nextNumber = 1;
         if ($last && preg_match('/(\d+)$/', $last->id_faktur, $match)) {
             $nextNumber = ((int) $match[1]) + 1;
         }
 
-        return 'FKT' . str_pad((string) $nextNumber, 3, '0', STR_PAD_LEFT);
+        $newId = 'FKT' . str_pad((string) $nextNumber, 3, '0', STR_PAD_LEFT);
+
+        // Pengaman ekstra: kalau ternyata masih bentrok, naikkan terus sampai unik
+        while (Faktur::where('id_faktur', $newId)->exists()) {
+            $nextNumber++;
+            $newId = 'FKT' . str_pad((string) $nextNumber, 3, '0', STR_PAD_LEFT);
+        }
+
+        return $newId;
     }
 }
