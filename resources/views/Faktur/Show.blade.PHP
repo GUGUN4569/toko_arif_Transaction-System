@@ -10,6 +10,12 @@
         ✅ {{ session('success') }}
     </div>
     @endif
+    
+    @if(session('error'))
+    <div style="background:rgba(239,68,68,0.15);border:1px solid var(--red);border-radius:10px;padding:12px 16px;margin-bottom:16px;color:var(--red);font-size:13px;font-weight:600;">
+        ❌ {{ session('error') }}
+    </div>
+    @endif
 
     <div class="card mb-4">
         <div class="card-header">
@@ -29,7 +35,6 @@
                         Belum Ada File
                     </span>
                 @endif
-                <!-- <a href="{{ route('faktur.edit', $faktur->id_faktur) }}" class="btn btn-secondary btn-sm">Edit</a> -->
                 <form action="{{ route('faktur.destroy', $faktur) }}" method="POST"
                       onsubmit="return confirm('Hapus faktur {{ $faktur->id_faktur }} beserta semua detailnya?')">
                     @csrf @method('DELETE')
@@ -78,18 +83,25 @@
                 </thead>
                 <tbody>
                     @foreach($faktur->detailFaktur as $i => $d)
+                    @php
+                        $hargaSatuanItem = $d->quantity > 0 ? ($d->subtotal_faktur / $d->quantity) : 0;
+                        $namaBarangAsli = $d->barang->nama_barang ?? $d->id_barang;
+                        $satuanBarangAsli = $d->barang->satuan ?? '';
+                    @endphp
                     <tr>
                         <td class="text-muted">{{ $i + 1 }}</td>
-                        <td>{{ $d->barang->nama_barang ?? $d->id_barang }}</td>
-                        <td>{{ $d->quantity }} {{ $d->barang->satuan ?? '' }}</td>
+                        <td>{{ $namaBarangAsli }}</td>
+                        <td>{{ $d->quantity }} {{ $satuanBarangAsli }}</td>
                         <td class="text-right">Rp {{ number_format($d->subtotal_faktur, 0, ',', '.') }}</td>
                         <td>
                             <div style="display:flex;gap:6px;align-items:center">
-                                {{-- Tombol Edit --}}
+                                {{-- Tombol Edit membawa data string teks nama barang dan satuan secara utuh --}}
                                 <button type="button" class="btn btn-secondary btn-sm"
                                     onclick="openEdit(
                                         '{{ $d->id }}',
-                                        '{{ $d->id_barang }}',
+                                        '{{ addslashes($namaBarangAsli) }}',
+                                        '{{ addslashes($satuanBarangAsli) }}',
+                                        {{ $hargaSatuanItem }},
                                         {{ $d->quantity }},
                                         {{ $d->subtotal_faktur }}
                                     )">Edit</button>
@@ -141,20 +153,23 @@
             <input type="hidden" name="id_faktur" value="{{ $faktur->id_faktur }}">
 
             <div class="form-group">
-                <label>Barang *</label>
-                <select name="id_barang" id="modal-barang" onchange="hitungSubtotal()" required>
-                    <option value="">— Pilih Barang —</option>
-                    @foreach($barangs as $b)
-                    <option value="{{ $b->id_barang }}" data-harga="{{ $b->harga }}">
-                        {{ $b->nama_barang }} (Rp {{ number_format($b->harga, 0, ',', '.') }})
-                    </option>
-                    @endforeach
-                </select>
+                <label>Nama Barang *</label>
+                <input type="text" name="nama_barang" id="modal-nama-barang" placeholder="Ketik nama barang..." required>
+            </div>
+
+            <div class="form-group">
+                <label>Satuan *</label>
+                <input type="text" name="satuan" id="modal-satuan" placeholder="Contoh: Pcs, Dus, Kg" required>
+            </div>
+
+            <div class="form-group">
+                <label>Harga Satuan *</label>
+                <input type="number" name="harga_satuan" id="modal-harga" min="0" value="0" oninput="hitungSubtotal()" required>
             </div>
 
             <div class="form-group">
                 <label>Quantity *</label>
-                <input type="number" name="quantity" id="modal-qty" min="1" value="1" onchange="hitungSubtotal()" required>
+                <input type="number" name="quantity" id="modal-qty" min="1" value="1" oninput="hitungSubtotal()" required>
             </div>
 
             <div class="form-group">
@@ -179,26 +194,29 @@
             <h3 style="font-size:15px;font-weight:700;">Edit Item</h3>
             <button onclick="closeEdit()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;">&times;</button>
         </div>
-        <form id="form-edit" action="{{ route('detail-faktur.update', 0) }}" method="POST">
+        <form id="form-edit" action="" method="POST">
             @csrf
             @method('PUT')
             <input type="hidden" name="id_faktur" value="{{ $faktur->id_faktur }}">
 
             <div class="form-group">
-                <label>Barang *</label>
-                <select name="id_barang" id="edit-barang" onchange="hitungSubtotalEdit()" required>
-                    <option value="">— Pilih Barang —</option>
-                    @foreach($barangs as $b)
-                    <option value="{{ $b->id_barang }}" data-harga="{{ $b->harga }}">
-                        {{ $b->nama_barang }} (Rp {{ number_format($b->harga, 0, ',', '.') }})
-                    </option>
-                    @endforeach
-                </select>
+                <label>Nama Barang *</label>
+                <input type="text" name="nama_barang" id="edit-nama-barang" placeholder="Nama barang..." required>
+            </div>
+
+            <div class="form-group">
+                <label>Satuan *</label>
+                <input type="text" name="satuan" id="edit-satuan" placeholder="Contoh: Pcs, Dus, Kg" required>
+            </div>
+
+            <div class="form-group">
+                <label>Harga Satuan *</label>
+                <input type="number" name="harga_satuan" id="edit-harga" min="0" value="0" oninput="hitungSubtotalEdit()" required>
             </div>
 
             <div class="form-group">
                 <label>Quantity *</label>
-                <input type="number" name="quantity" id="edit-qty" min="1" value="1" onchange="hitungSubtotalEdit()" required>
+                <input type="number" name="quantity" id="edit-qty" min="1" value="1" oninput="hitungSubtotalEdit()" required>
             </div>
 
             <div class="form-group">
@@ -223,9 +241,7 @@ function closeTambah() {
     document.getElementById('modal-tambah').style.display = 'none';
 }
 function hitungSubtotal() {
-    const sel = document.getElementById('modal-barang');
-    const opt = sel.selectedOptions[0];
-    const harga = parseFloat(opt?.dataset?.harga || 0);
+    const harga = parseFloat(document.getElementById('modal-harga').value) || 0;
     const qty   = parseFloat(document.getElementById('modal-qty').value) || 0;
     document.getElementById('modal-subtotal').value = (harga * qty).toFixed(2);
 }
@@ -234,15 +250,14 @@ document.getElementById('modal-tambah').addEventListener('click', function(e) {
 });
 
 /* ---- Modal Edit ---- */
-function openEdit(id, idBarang, qty, subtotal) {
-    // Set action form ke route update
+function openEdit(id, namaBarang, satuan, hargaSatuan, qty, subtotal) {
+    // Set action form ke route update detail-faktur target
     document.getElementById('form-edit').action = '{{ url("detail-faktur") }}/' + id;
 
-    // Set nilai barang
-    const sel = document.getElementById('edit-barang');
-    sel.value = idBarang;
-
-    // Set qty & subtotal
+    // Set nilai text input modal dari baris data tabel yang dipilih
+    document.getElementById('edit-nama-barang').value = namaBarang;
+    document.getElementById('edit-satuan').value = satuan;
+    document.getElementById('edit-harga').value = hargaSatuan;
     document.getElementById('edit-qty').value = qty;
     document.getElementById('edit-subtotal').value = subtotal;
 
@@ -252,9 +267,7 @@ function closeEdit() {
     document.getElementById('modal-edit').style.display = 'none';
 }
 function hitungSubtotalEdit() {
-    const sel = document.getElementById('edit-barang');
-    const opt = sel.selectedOptions[0];
-    const harga = parseFloat(opt?.dataset?.harga || 0);
+    const harga = parseFloat(document.getElementById('edit-harga').value) || 0;
     const qty   = parseFloat(document.getElementById('edit-qty').value) || 0;
     document.getElementById('edit-subtotal').value = (harga * qty).toFixed(2);
 }

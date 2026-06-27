@@ -20,21 +20,27 @@ class StoreFakturRequest extends FormRequest
      * Rules validasi.
      * Header faktur + array items (detail barang) divalidasi sekaligus.
      */
-    public function rules(): array
-    {
-        return [
-            'no_faktur'      => ['required', 'string', 'max:50'],
-            'tanggal_faktur' => ['required', 'date', 'before_or_equal:today'],
-            'id_supplier'    => ['nullable', 'string', 'exists:supplier,id_supplier'],
-            'id_pegawai'     => ['nullable', 'integer', 'exists:pegawai,id_pegawai'],
+ public function rules(): array
+{
+    return [
+        'no_faktur'           => 'required|string|max:50',
+        'tanggal_faktur'      => 'required|date',
+        'id_supplier'         => 'nullable|exists:supplier,id_supplier',
+        'id_pegawai'          => 'nullable|exists:pegawai,id_pegawai',
+        
+        // HAPUS ATAU JANGAN MASUKKAN 'total_jumlah_faktur' => 'required' DI SINI
+        // Karena total dihitung otomatis oleh Controller lewat sum subtotal.
 
-            // Items wajib array, minimal 1 baris barang
-            'items'                   => ['required', 'array', 'min:1'],
-            'items.*.id_barang'       => ['required', 'string', 'exists:barang,id_barang'],
-            'items.*.quantity'        => ['required', 'integer', 'min:1'],
-            'items.*.subtotal_faktur' => ['required', 'numeric', 'min:0'],
-        ];
-    }
+        'items'               => 'required|array|min:1',
+        'items.*.nama_barang' => 'required|string|max:100',
+        'items.*.satuan'      => 'required|string|max:20',
+        'items.*.quantity'    => 'required|integer|min:1',
+        'items.*.subtotal_faktur' => 'required|numeric|min:0',
+        
+        // DISAMAKAN: Gunakan 'harga_satuan' sesuai name attribute di Create.blade.php
+        'items.*.harga_satuan'    => 'required|numeric|min:0', 
+    ];
+}
 
     /**
      * Pesan error custom (Bahasa Indonesia, konsisten dengan controller existing)

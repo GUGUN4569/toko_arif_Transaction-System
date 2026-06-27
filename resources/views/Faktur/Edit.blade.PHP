@@ -54,24 +54,30 @@
         <div class="card">
             <div class="card-header">
                 <span class="card-title">Detail Barang</span>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="addItem()">+ Tambah Baris</button>
             </div>
             <div class="card-body">
-                <div style="display:grid;grid-template-columns:1fr 90px 140px;gap:8px;margin-bottom:8px">
-                    <span style="font-size:11px;color:var(--muted);text-transform:uppercase">Barang</span>
+                <div style="display:grid;grid-template-columns:2fr 1fr 1fr 90px 140px 36px;gap:8px;margin-bottom:8px">
+                    <span style="font-size:11px;color:var(--muted);text-transform:uppercase">Nama Barang</span>
+                    <span style="font-size:11px;color:var(--muted);text-transform:uppercase">Satuan</span>
+                    <span style="font-size:11px;color:var(--muted);text-transform:uppercase">Harga Beli</span>
                     <span style="font-size:11px;color:var(--muted);text-transform:uppercase">Qty</span>
                     <span style="font-size:11px;color:var(--muted);text-transform:uppercase">Subtotal</span>
+                    <span></span>
                 </div>
                 <div id="items-container">
                     @foreach($faktur->detailFaktur as $i => $d)
-                    <div class="item-row" id="row-{{ $i }}" style="grid-template-columns:1fr 90px 140px">
-                        <input type="text" value="{{ $d->barang->nama_barang ?? $d->id_barang }}" readonly
-                               style="opacity:0.8;cursor:default;background:var(--bg3)">
-                        <input type="hidden" name="items[{{ $i }}][id_barang]" value="{{ $d->id_barang }}">
-                        <input type="number" name="items[{{ $i }}][quantity]" min="1" value="{{ $d->quantity }}"
-                               onchange="updateSubtotal({{ $i }}, {{ $d->barang->harga ?? 0 }})"
-                               class="qty-input" id="qty-{{ $i }}">
-                        <input type="number" name="items[{{ $i }}][subtotal_faktur]" min="0" value="{{ $d->subtotal_faktur }}"
-                               readonly style="opacity:0.7" id="sub-{{ $i }}">
+                    @php
+                        // Hitung mundur harga satuan asal untuk form input harga
+                        $hargaAsal = $d->quantity > 0 ? ($d->subtotal_faktur / $d->quantity) : 0;
+                    @endphp
+                    <div class="item-row" id="row-{{ $i }}" style="display:grid;grid-template-columns:2fr 1fr 1fr 90px 140px 36px;gap:8px;margin-bottom:8px">
+                        <input type="text" name="items[{{ $i }}][nama_barang]" value="{{ $d->barang->nama_barang ?? '' }}" placeholder="Nama Barang" class="form-control" required>
+                        <input type="text" name="items[{{ $i }}][satuan]" value="{{ $d->barang->satuan ?? '' }}" placeholder="Pcs/Dus/Kg" class="form-control" required>
+                        <input type="number" name="items[{{ $i }}][harga_satuan]" min="0" value="{{ $hargaAsal }}" oninput="updateSubtotal({{ $i }})" class="form-control harga-input">
+                        <input type="number" name="items[{{ $i }}][quantity]" min="1" value="{{ $d->quantity }}" oninput="updateSubtotal({{ $i }})" class="form-control qty-input" id="qty-{{ $i }}">
+                        <input type="number" name="items[{{ $i }}][subtotal_faktur]" min="0" value="{{ $d->subtotal_faktur }}" readonly style="opacity:0.7" class="form-control subtotal-input" id="sub-{{ $i }}">
+                        <button type="button" onclick="removeItem(this)" style="background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.3);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:14px">×</button>
                     </div>
                     @endforeach
                 </div>
@@ -96,17 +102,44 @@
 </form>
  
 <script>
-function updateSubtotal(i, harga) {
-    const qty = parseFloat(document.getElementById('qty-' + i).value) || 0;
-    document.getElementById('sub-' + i).value = (harga * qty).toFixed(2);
+// Menghitung index awal baris berdasarkan item yang sudah ada dari database
+let rowCount = {{ $faktur->detailFaktur->count() }};
+ 
+function addItem() {
+    const i = rowCount++;
+    const row = document.createElement('div');
+    row.className = 'item-row';
+    row.id = `row-${i}`;
+    row.style = 'display:grid;grid-template-columns:2fr 1fr 1fr 90px 140px 36px;gap:8px;margin-bottom:8px';
+    row.innerHTML = `
+        <input type="text" name="items[${i}][nama_barang]" placeholder="Nama Barang" class="form-control" required>
+        <input type="text" name="items[${i}][satuan]" placeholder="Pcs/Dus/Kg" class="form-control" required>
+        <input type="number" name="items[${i}][harga_satuan]" min="0" value="0" oninput="updateSubtotal(${i})" class="form-control harga-input">
+        <input type="number" name="items[${i}][quantity]" min="1" value="1" oninput="updateSubtotal(${i})" class="form-control qty-input">
+        <input type="number" name="items[${i}][subtotal_faktur]" min="0" value="0" readonly style="opacity:0.7" class="form-control subtotal-input">
+        <button type="button" onclick="removeItem(this)" style="background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.3);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:14px">×</button>
+    `;
+    document.getElementById('items-container').appendChild(row);
+}
+ 
+function removeItem(btn) {
+    if (document.querySelectorAll('#items-container .item-row').length <= 1) return;
+    btn.closest('.item-row').remove();
+    updateGrandTotal();
+}
+ 
+function updateSubtotal(i) {
+    const row = document.getElementById(`row-${i}`);
+    if (!row) return;
+    const harga = parseFloat(row.querySelector('.harga-input').value) || 0;
+    const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
+    row.querySelector('.subtotal-input').value = (harga * qty).toFixed(2);
     updateGrandTotal();
 }
  
 function updateGrandTotal() {
     let total = 0;
-    document.querySelectorAll('#items-container input[readonly][type="number"]').forEach(el => {
-        total += parseFloat(el.value) || 0;
-    });
+    document.querySelectorAll('#items-container .subtotal-input').forEach(el => total += parseFloat(el.value) || 0);
     document.getElementById('grand-total').textContent = 'Rp ' + total.toLocaleString('id-ID', {maximumFractionDigits:0});
 }
 </script>

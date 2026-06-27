@@ -56,24 +56,21 @@
                 <button type="button" class="btn btn-secondary btn-sm" onclick="addItem()">+ Tambah Baris</button>
             </div>
             <div class="card-body">
-                <div style="display:grid;grid-template-columns:1fr 90px 140px 36px;gap:8px;margin-bottom:8px">
-                    <span style="font-size:11px;color:var(--muted);text-transform:uppercase">Barang</span>
+                <div style="display:grid;grid-template-columns:2fr 1fr 1fr 90px 140px 36px;gap:8px;margin-bottom:8px">
+                    <span style="font-size:11px;color:var(--muted);text-transform:uppercase">Nama Barang</span>
+                    <span style="font-size:11px;color:var(--muted);text-transform:uppercase">Satuan</span>
+                    <span style="font-size:11px;color:var(--muted);text-transform:uppercase">Harga Beli</span>
                     <span style="font-size:11px;color:var(--muted);text-transform:uppercase">Qty</span>
                     <span style="font-size:11px;color:var(--muted);text-transform:uppercase">Subtotal</span>
                     <span></span>
                 </div>
                 <div id="items-container">
-                    <div class="item-row" id="row-0">
-                        <select name="items[0][id_barang]" onchange="updateSubtotal(0)" class="barang-select">
-                            <option value="">— Pilih Barang —</option>
-                            @foreach($barangs as $b)
-                            <option value="{{ $b->id_barang }}" data-harga="{{ $b->harga }}">
-                                {{ $b->nama_barang }} (Rp {{ number_format($b->harga, 0, ',', '.') }})
-                            </option>
-                            @endforeach
-                        </select>
-                        <input type="number" name="items[0][quantity]" min="1" value="1" onchange="updateSubtotal(0)" class="qty-input">
-                        <input type="number" name="items[0][subtotal_faktur]" min="0" value="0" readonly style="opacity:0.7">
+                    <div class="item-row" id="row-0" style="display:grid;grid-template-columns:2fr 1fr 1fr 90px 140px 36px;gap:8px;margin-bottom:8px">
+                        <input type="text" name="items[0][nama_barang]" placeholder="Nama Barang" class="form-control" required>
+                        <input type="text" name="items[0][satuan]" placeholder="Pcs/Dus/Kg" class="form-control" required>
+                        <input type="number" name="items[0][harga_satuan]" min="0" value="0" oninput="updateSubtotal(0)" class="form-control harga-input">
+                        <input type="number" name="items[0][quantity]" min="1" value="1" oninput="updateSubtotal(0)" class="form-control qty-input">
+                        <input type="number" name="items[0][subtotal_faktur]" min="0" value="0" readonly style="opacity:0.7" class="form-control subtotal-input">
                         <button type="button" onclick="removeItem(this)" style="background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.3);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:14px">×</button>
                     </div>
                 </div>
@@ -97,22 +94,19 @@
  
 <script>
 let rowCount = 1;
-const barangs = @json($barangs->keyBy('id_barang'));
  
 function addItem() {
     const i = rowCount++;
-    const options = Object.entries(barangs).map(([id, b]) =>
-        `<option value="${id}" data-harga="${b.harga}">${b.nama_barang} (Rp ${Number(b.harga).toLocaleString('id-ID')})</option>`
-    ).join('');
     const row = document.createElement('div');
     row.className = 'item-row';
     row.id = `row-${i}`;
+    row.style = 'display:grid;grid-template-columns:2fr 1fr 1fr 90px 140px 36px;gap:8px;margin-bottom:8px';
     row.innerHTML = `
-        <select name="items[${i}][id_barang]" onchange="updateSubtotal(${i})" class="barang-select">
-            <option value="">— Pilih Barang —</option>${options}
-        </select>
-        <input type="number" name="items[${i}][quantity]" min="1" value="1" onchange="updateSubtotal(${i})" class="qty-input">
-        <input type="number" name="items[${i}][subtotal_faktur]" min="0" value="0" readonly style="opacity:0.7">
+        <input type="text" name="items[${i}][nama_barang]" placeholder="Nama Barang" class="form-control" required>
+        <input type="text" name="items[${i}][satuan]" placeholder="Pcs/Dus/Kg" class="form-control" required>
+        <input type="number" name="items[${i}][harga_satuan]" min="0" value="0" oninput="updateSubtotal(${i})" class="form-control harga-input">
+        <input type="number" name="items[${i}][quantity]" min="1" value="1" oninput="updateSubtotal(${i})" class="form-control qty-input">
+        <input type="number" name="items[${i}][subtotal_faktur]" min="0" value="0" readonly style="opacity:0.7" class="form-control subtotal-input">
         <button type="button" onclick="removeItem(this)" style="background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.3);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:14px">×</button>
     `;
     document.getElementById('items-container').appendChild(row);
@@ -127,16 +121,15 @@ function removeItem(btn) {
 function updateSubtotal(i) {
     const row = document.getElementById(`row-${i}`);
     if (!row) return;
-    const opt = row.querySelector('.barang-select').selectedOptions[0];
+    const harga = parseFloat(row.querySelector('.harga-input').value) || 0;
     const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
-    const harga = parseFloat(opt?.dataset?.harga || 0);
-    row.querySelectorAll('input[type="number"]')[1].value = (harga * qty).toFixed(2);
+    row.querySelector('.subtotal-input').value = (harga * qty).toFixed(2);
     updateGrandTotal();
 }
  
 function updateGrandTotal() {
     let total = 0;
-    document.querySelectorAll('#items-container input[readonly]').forEach(el => total += parseFloat(el.value) || 0);
+    document.querySelectorAll('#items-container .subtotal-input').forEach(el => total += parseFloat(el.value) || 0);
     document.getElementById('grand-total').textContent = 'Rp ' + total.toLocaleString('id-ID', {maximumFractionDigits:0});
 }
 </script>
