@@ -2,10 +2,6 @@
 @section('title', 'Data Barang')
  
 @section('topbar-actions')
-    <a href="{{ route('barang.create') }}" class="btn btn-primary">
-        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-        Tambah Barang
-    </a>
 @endsection
  
 @section('content')
@@ -30,11 +26,6 @@
                     <td>{{ $b->satuan ?? '-' }}</td>
                     <td>
                         <div class="flex gap-2">
- 
-                            <a href="{{ route('barang.edit', $b) }}" class="btn btn-secondary btn-sm">Edit</a>
-                            <form action="{{ route('barang.destroy', $b) }}" method="POST" onsubmit="return confirm('Hapus barang ini?')">
-                                @csrf @method('DELETE')
-                                <button class="btn btn-danger btn-sm">Hapus</button>
                             </form>
                         </div>
                     </td>
